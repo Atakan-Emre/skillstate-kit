@@ -206,3 +206,30 @@ def test_source_drift_is_reported_and_blocks_handoff(project):
     assert service.run_context("qa-run")["source_drift"]
     with pytest.raises(SourceChanged):
         service.handoff("qa-run", "codex", 0, "claude-code")
+
+
+def test_installer_rolls_back_partial_write_failure(project, monkeypatch):
+    from skillstate import hosts
+
+    config = project / ".mcp.json"
+    config.write_text('{"custom":"preserve"}', encoding="utf-8")
+    original = config.read_bytes()
+    real_write = hosts.atomic_write
+    writes = []
+
+    def fail_once(path, data):
+        writes.append(path)
+        if len(writes) == 3:
+            raise OSError("simulated disk failure")
+        real_write(path, data)
+
+    monkeypatch.setattr(hosts, "atomic_write", fail_once)
+    with pytest.raises(OSError, match="disk failure"):
+        install(project, mcp=True)
+    assert config.read_bytes() == original
+    assert not (project / ".agents/skills/generate-skill-state/SKILL.md").exists()
+    assert not (project / ".claude/skills/generate-skill-state/SKILL.md").exists()
+    assert not (project / ".skillstate/local/install-record.json").exists()
+    monkeypatch.setattr(hosts, "atomic_write", real_write)
+    install(project, mcp=True)
+    assert doctor(project)["ok"]

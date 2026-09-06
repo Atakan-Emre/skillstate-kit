@@ -2,6 +2,16 @@
 
 Tests validate contracts, not an absence of all possible defects. A successful generation reports structural checks; it does not invent live execution evidence.
 
+## Initial release checks (2026-09-06)
+
+- Local Windows / Python 3.12.7: **98 passed, 1 skipped**, **87.10%** combined statement/branch coverage. The skipped test requires symlink privileges.
+- A scripted 100-operation run retained identical model-context byte sizes while its audit grew to 202 events. This checks history isolation, not real-model task quality or token savings.
+- Fresh wheel installation in a separate environment passed demo, generation, bundle validation and a real 12-tool MCP STDIO handshake (protocol `2025-11-25`). Wheel/sdist passed `twine check`.
+- Both generated skill files passed Codex's skill-format validator. The installed Codex CLI discovered the generated `skillstate-kit` MCP entry and reported it enabled. This was configuration discovery, not a live model completing the workflow.
+- Claude Code and Antigravity applications were not available for live task verification. Their generated configuration and shared state protocol are covered by automated tests.
+
+The release's CI link records the exact release commit and cross-platform results; use it when checking a downloaded distribution. These observations do not certify every host version or arbitrary generated domain schema.
+
 ## Automated test matrix
 
 | Area | Observable checks |

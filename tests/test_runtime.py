@@ -153,3 +153,41 @@ def test_async_model_and_async_tool(store):
 
     result = asyncio.run(SkillRuntime(store, model, [tool(handler)]).step("run", "owner"))
     assert result["state"] == {"count": 1}
+
+
+def test_model_cannot_mutate_checkpoint_during_retry(store):
+    seen = []
+
+    def model(payload):
+        seen.append(payload["observation"].copy())
+        payload["state"]["count"] = 9
+        payload["observation"].clear()
+        payload["tools"][0]["input_schema"]["required"] = []
+        return {} if len(seen) == 1 else decision()
+
+    runtime = SkillRuntime(store, model, [tool()])
+    assert asyncio.run(runtime.step("run", "owner"))["state"] == {"count": 1}
+    assert seen == [{"request_id": "original-request"}] * 2
+    assert runtime.tools["record"].input_schema["required"] == ["value"]
+
+
+def test_long_run_retains_fixed_context_despite_growing_audit():
+    from skillstate import SQLiteStore, Skill
+
+    sizes = []
+
+    def model(payload):
+        sizes.append(len(dumps(payload).encode("utf-8")))
+        if len(sizes) > 100:
+            return {"patch": [], "action": None, "done": True}
+        return {"patch": [], "action": {"name": "tick", "arguments": {}}, "done": False}
+
+    skill = Skill("long-run", "Repeat the scripted check.", {"type": "object"}, {})
+    tick = Tool("tick", "Scripted tick", {"type": "object"}, lambda a, o: ToolResult(True, {}))
+    with SQLiteStore() as storage:
+        storage.create("long", skill, "worker", {})
+        runtime = SkillRuntime(storage, model, [tick])
+        result = asyncio.run(runtime.run("long", "worker", max_steps=101))
+        assert result["status"] == "completed"
+        assert len(storage.events("long", limit=1000)) == 202
+        assert len(set(sizes)) == 1
