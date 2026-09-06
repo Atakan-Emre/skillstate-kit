@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "Cite this repository and the SKILL.state paper that inspired its explicit-state execution pattern."
+title: "skillstate-kit"
+type: software
+version: 0.1.0
+license: MIT
+authors:
+  - name: "Atakan Emre"
+repository-code: "https://github.com/Atakan-Emre/skillstate-kit"
+references:
+  - type: article
+    title: "SKILL.state: Scalable Long-Horizon Agent Skills"
+    authors:
+      - family-names: Badhe
+        given-names: Sanket
+      - family-names: Tiwari
+        given-names: Priyanka
+      - family-names: Chung
+        given-names: Jonghyun
+    year: 2026
+    url: "https://arxiv.org/abs/2608.26263"

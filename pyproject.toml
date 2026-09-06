@@ -1,0 +1,61 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "skillstate-kit"
+version = "0.1.0"
+description = "Compile existing agent skills into portable, validated execution state."
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [{name = "Atakan Emre"}]
+keywords = ["agents", "skills", "state", "mcp", "codex", "claude"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Operating System :: OS Independent",
+  "Typing :: Typed",
+]
+dependencies = ["jsonschema>=4.23,<5", "PyYAML>=6.0.2,<7", "pathspec>=0.12,<1", "tomlkit>=0.13,<1"]
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.20,<2"]
+http = ["httpx>=0.28,<1"]
+dev = ["pytest>=8,<9", "pytest-cov>=6,<7", "hypothesis>=6.120,<7", "ruff>=0.11,<1", "build>=1.2,<2", "twine>=6,<7", "mcp>=1.20,<2", "httpx>=0.28,<1"]
+
+[project.scripts]
+skillstate = "skillstate.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Atakan-Emre/skillstate-kit"
+Repository = "https://github.com/Atakan-Emre/skillstate-kit"
+Documentation = "https://github.com/Atakan-Emre/skillstate-kit/tree/main/docs"
+Issues = "https://github.com/Atakan-Emre/skillstate-kit/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/skillstate"]
+core-metadata-version = "2.4"
+
+[tool.hatch.build.targets.sdist]
+core-metadata-version = "2.4"
+include = ["/src", "/tests", "/examples", "/docs", "/scripts", "/README.md", "/LICENSE", "/CHANGELOG.md", "/CONTRIBUTING.md", "/SECURITY.md", "/pyproject.toml", "/uv.lock", "/CITATION.cff"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra --strict-markers"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]
+ignore = ["E501"]
+
+[tool.coverage.run]
+source = ["skillstate"]
+branch = true
