@@ -2,6 +2,11 @@ name: Publish
 
 on:
   workflow_dispatch:
+    inputs:
+      testpypi:
+        description: Run an additional TestPyPI rehearsal before production (requires a separate publisher)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -16,6 +21,7 @@ jobs:
     uses: ./.github/workflows/ci.yml
 
   testpypi:
+    if: inputs.testpypi
     needs: validate
     runs-on: ubuntu-latest
     environment:
@@ -48,7 +54,8 @@ jobs:
       - run: python scripts/verify_index.py testpypi dist
 
   pypi:
-    needs: verify-testpypi
+    needs: [validate, verify-testpypi]
+    if: ${{ !cancelled() && needs.validate.result == 'success' && (!inputs.testpypi || needs['verify-testpypi'].result == 'success') }}
     runs-on: ubuntu-latest
     environment:
       name: pypi

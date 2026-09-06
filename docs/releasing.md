@@ -15,7 +15,9 @@ The repository currently stays private. Build a wheel/sdist after the test and p
 
 PyPI publication makes distributions publicly downloadable, even if GitHub remains private. Publication has been requested for this project; the first public candidate is 0.1.1. Registry presence and workflow results, not a prepared document, establish that publication actually happened.
 
-The manually dispatched `.github/workflows/publish.yml` runs the full CI matrix and builds once. It uploads those artifacts to TestPyPI, downloads both distributions and verifies their SHA-256 hashes, installs the downloaded wheel in a fresh environment, then uploads the same artifacts to PyPI and repeats verification. Publishing jobs alone receive `id-token: write`; they do not check out or execute project code. `skip-existing` supports interrupted-run recovery; differing registry hashes fail verification.
+The manually dispatched `.github/workflows/publish.yml` runs the full CI matrix, builds once and verifies a clean wheel installation before uploading to PyPI. It then downloads both published distributions, verifies their SHA-256 hashes against the tested artifacts and exercises the downloaded wheel in a fresh environment. Publishing jobs alone receive `id-token: write`; they do not check out or execute project code. `skip-existing` supports interrupted-run recovery; differing registry hashes fail verification.
+
+The optional `testpypi` input adds a rehearsal before production using the same artifacts and hash/installation verification. It requires a separate TestPyPI account and publisher. The initial public release uses the production route after local and CI validation; TestPyPI availability is not a prerequisite. A requested rehearsal that fails blocks production.
 
 Register a pending GitHub Trusted Publisher in each account's Publishing settings:
 

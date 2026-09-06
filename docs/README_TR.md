@@ -1,15 +1,14 @@
 # Türkçe başlangıç
 
-skillstate-kit, mevcut agent skill'lerini kalıcı ve doğrulanan görev durumuyla kullanmanızı sağlar. İlk sürüm alpha durumundadır; repo private, PyPI yayını henüz yapılmadı.
+skillstate-kit, mevcut agent skill'lerini kalıcı ve doğrulanan görev durumuyla kullanmanızı sağlar. Sürüm alpha durumundadır; geliştirme deposu private kalırken paket PyPI üzerinden dağıtılır.
 
 ## Kurulum
 
-Repo erişiminiz varsa:
+Python 3.11 veya üzeri bir ortamda:
 
 ```text
-git clone https://github.com/Atakan-Emre/skillstate-kit.git
-cd skillstate-kit
-python -m pip install ".[mcp,http]"
+python -m pip install "skillstate-kit[mcp,http]"
+skillstate demo
 ```
 
 Ardından kullanacağınız projenin klasöründe:

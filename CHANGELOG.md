@@ -1,9 +1,9 @@
 # Changelog
 
-## 0.1.1 — public distribution preparation
+## 0.1.1 — public distribution
 
 - Self-contained PyPI package description with installation and SDK examples.
-- GitHub OIDC publishing workflow: full test matrix, TestPyPI, downloaded package verification, then PyPI.
+- GitHub OIDC publishing workflow: full test matrix, clean installation, optional TestPyPI rehearsal, PyPI and downloaded package verification.
 - Verify registry file hashes against the tested artifacts before installation.
 - No changes to the runtime or storage contract from 0.1.0.
 

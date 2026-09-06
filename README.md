@@ -8,7 +8,7 @@ Turn an existing `SKILL.md` into a state-backed skill, use it from Codex, Claude
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**Release status:** `0.1.0` is an initial alpha. The repository is private; installation currently requires repository access or a release wheel. It has not been published on PyPI. Tested local adapters are not live certification of every host application.
+**Release status:** `0.1.1` is an initial alpha. The development repository is private; public package installation uses PyPI. Tested local adapters are not live certification of every host application.
 
 [Türkçe başlangıç](docs/README_TR.md) · [CLI](docs/cli.md) · [Architecture](docs/architecture.md) · [Compatibility](docs/compatibility.md) · [Validation](docs/validation.md)
 
@@ -24,12 +24,16 @@ Turn an existing `SKILL.md` into a state-backed skill, use it from Codex, Claude
 ## Quick start
 
 ```bash
-git clone https://github.com/Atakan-Emre/skillstate-kit.git
-cd skillstate-kit
-python -m pip install ".[mcp,http]"
+python -m pip install "skillstate-kit[mcp,http]"
+skillstate demo
+```
+
+Then, inside your target project (replace `skills/qa/SKILL.md` with your skill):
+
+```bash
 
 skillstate init --host codex --host claude-code --host antigravity --mcp
-skillstate generate examples/qa/SKILL.md --name qa-state --install
+skillstate generate skills/qa/SKILL.md --name qa-state --install
 skillstate validate qa-state
 skillstate doctor --mcp
 ```
