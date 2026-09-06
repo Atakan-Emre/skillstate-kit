@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1 — public distribution preparation
+
+- Self-contained PyPI package description with installation and SDK examples.
+- GitHub OIDC publishing workflow: full test matrix, TestPyPI, downloaded package verification, then PyPI.
+- Verify registry file hashes against the tested artifacts before installation.
+- No changes to the runtime or storage contract from 0.1.0.
+
 ## 0.1.0 — initial alpha
 
 - Source-preserving SKILL.md conversion and Python test tracking profile.
