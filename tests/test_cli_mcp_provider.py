@@ -259,3 +259,29 @@ def test_http_transport_failure_hides_sensitive_url():
     with pytest.raises(ValidationError, match="ConnectError") as caught:
         asyncio.run(model({}))
     assert "sensitive" not in str(caught.value)
+
+
+def test_cli_unicode_artifact_survives_ascii_output_pipe(project):
+    from skillstate.artifacts import ArtifactStore
+
+    content = "Türkçe 日本語 🙂"
+    artifact = ArtifactStore(project).put(content)
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-m",
+            "skillstate",
+            "--project",
+            str(project),
+            "artifact",
+            "read",
+            artifact,
+        ],
+        capture_output=True,
+        text=True,
+        encoding="ascii",
+        timeout=15,
+        env={**os.environ, "PYTHONIOENCODING": "ascii"},
+    )
+    assert result.returncode == 0, result.stderr
+    assert json.loads(result.stdout)["content"] == content

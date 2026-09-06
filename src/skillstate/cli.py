@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import os
 import sqlite3
 import sys
@@ -223,27 +224,30 @@ def dispatch(args) -> dict | list | None:
 
 
 def main(argv: list[str] | None = None) -> int:
+    def emit(value, *, stream=None):
+        # Strict validation first; ASCII JSON escapes also work in legacy Windows
+        # pipes without failing after a mutation has already committed.
+        print(json.dumps(json.loads(dumps(value)), ensure_ascii=True), file=stream)
+
     args = parser().parse_args(argv)
     try:
         result = dispatch(args)
         if result is not None:
-            print(dumps(result))
+            emit(result)
         return 1 if args.command == "doctor" and not result["ok"] else 0
     except SkillStateError as exc:
-        print(dumps({"error": exc.code, "message": str(exc)}), file=sys.stderr)
+        emit({"error": exc.code, "message": str(exc)}, stream=sys.stderr)
         return 2
     except (OSError, UnicodeError) as exc:
-        print(dumps({"error": "io_error", "message": str(exc)}), file=sys.stderr)
+        emit({"error": "io_error", "message": str(exc)}, stream=sys.stderr)
         return 3
     except sqlite3.Error as exc:
-        print(
-            dumps(
-                {
-                    "error": "storage_error",
-                    "message": f"SQLite operation failed: {type(exc).__name__}",
-                }
-            ),
-            file=sys.stderr,
+        emit(
+            {
+                "error": "storage_error",
+                "message": f"SQLite operation failed: {type(exc).__name__}",
+            },
+            stream=sys.stderr,
         )
         return 3
 
