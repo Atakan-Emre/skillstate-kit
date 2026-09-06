@@ -5,10 +5,13 @@
 Turn an existing `SKILL.md` into a state-backed skill, use it from Codex, Claude Code or Antigravity, and resume work from a durable checkpoint. Embed the same runtime in Python when you need to control every model input and tool operation.
 
 [![CI](https://github.com/Atakan-Emre/skillstate-kit/actions/workflows/ci.yml/badge.svg)](https://github.com/Atakan-Emre/skillstate-kit/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/skillstate-kit)](https://pypi.org/project/skillstate-kit/)
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 **Release status:** `0.1.1` is an initial alpha. The development repository is private; public package installation uses PyPI. Tested local adapters are not live certification of every host application.
+
+[Published package](https://pypi.org/project/skillstate-kit/0.1.1/) · [Release verification](docs/releases/0.1.1.md)
 
 [Türkçe başlangıç](docs/README_TR.md) · [CLI](docs/cli.md) · [Architecture](docs/architecture.md) · [Compatibility](docs/compatibility.md) · [Validation](docs/validation.md)
 

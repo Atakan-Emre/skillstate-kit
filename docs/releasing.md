@@ -13,7 +13,7 @@ The repository currently stays private. Build a wheel/sdist after the test and p
 
 ## PyPI publication
 
-PyPI publication makes distributions publicly downloadable, even if GitHub remains private. Publication has been requested for this project; the first public candidate is 0.1.1. Registry presence and workflow results, not a prepared document, establish that publication actually happened.
+PyPI publication makes distributions publicly downloadable, even if GitHub remains private. Version 0.1.1 is published; see [release evidence](releases/0.1.1.md). Registry presence and workflow results, not a prepared document, establish that a new publication actually happened.
 
 The manually dispatched `.github/workflows/publish.yml` runs the full CI matrix, builds once and verifies a clean wheel installation before uploading to PyPI. It then downloads both published distributions, verifies their SHA-256 hashes against the tested artifacts and exercises the downloaded wheel in a fresh environment. Publishing jobs alone receive `id-token: write`; they do not check out or execute project code. `skip-existing` supports interrupted-run recovery; differing registry hashes fail verification.
 
