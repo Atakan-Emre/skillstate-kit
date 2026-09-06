@@ -172,7 +172,7 @@ def test_model_cannot_mutate_checkpoint_during_retry(store):
 
 
 def test_long_run_retains_fixed_context_despite_growing_audit():
-    from skillstate import SQLiteStore, Skill
+    from skillstate import Skill, SQLiteStore
 
     sizes = []
 
