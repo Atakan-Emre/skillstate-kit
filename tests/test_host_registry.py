@@ -84,3 +84,20 @@ def test_host_cli_and_desktop_registry_are_explicit(project, capsys, monkeypatch
     assert desktop.uninstall(project)["state_retained"]
     monkeypatch.setattr(host_registry.desktop, "connection", lambda p: {"connected": True})
     assert desktop.install(project)["connected"]
+
+
+def test_shared_skills_do_not_certify_an_uninstalled_host(project):
+    hosts.install(project, ["antigravity"])
+    assert not host_registry.get("codex").doctor(project)["ok"]
+    assert host_registry.get("antigravity").doctor(project)["ok"]
+    hosts.install(project, ["codex"])
+    hosts.uninstall(project, ["codex"])
+    assert not host_registry.get("codex").doctor(project)["ok"]
+
+
+def test_generated_wrapper_preserves_selected_hosts(project):
+    hosts.install(project, ["codex"])
+    result = hosts.install(project, name="qa-state")
+    assert result["hosts"] == ["codex"]
+    assert not (project / ".claude").exists()
+    assert (project / ".agents/skills/qa-state/SKILL.md").is_file()

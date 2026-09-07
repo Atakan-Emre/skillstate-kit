@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skillstate-kit"
-version = "0.2.1"
+version = "0.2.2"
 description = "Compile existing agent skills into portable, validated execution state."
 readme = "docs/PYPI_README.md"
 requires-python = ">=3.11"
@@ -41,7 +41,6 @@ packages = ["src/skillstate"]
 core-metadata-version = "2.4"
 
 [tool.hatch.build.targets.sdist]
-exclude = ["/docs/research", "/docs/architecture-audit.md"]
 core-metadata-version = "2.4"
 include = ["/src", "/tests", "/examples", "/docs", "/integrations", "/scripts", "/README.md", "/LICENSE", "/CHANGELOG.md", "/CONTRIBUTING.md", "/SECURITY.md", "/pyproject.toml", "/uv.lock", "/CITATION.cff"]
 

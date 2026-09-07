@@ -201,22 +201,24 @@ def install(
     project: Path, hosts: list[str] | None = None, *, name: str | None = None, mcp: bool = False
 ) -> dict:
     project = project.resolve()
-    hosts = list(dict.fromkeys(hosts or HOSTS))
-    if any(host not in HOSTS for host in hosts):
-        raise ValidationError("Unknown host")
-    if mcp and importlib.util.find_spec("mcp") is None:
-        raise ValidationError("Install skillstate-kit[mcp] before enabling MCP")
-    skill_name, content = (name, wrapper(name)) if name else ("generate-skill-state", BOOTSTRAP)
-    files = {}
-    if "codex" in hosts or "antigravity" in hosts:
-        files[f".agents/skills/{skill_name}/SKILL.md"] = content
-    if "claude-code" in hosts:
-        files[f".claude/skills/{skill_name}/SKILL.md"] = content
-    if name is None:
-        for relative in list(files):
-            files[relative.replace("generate-skill-state", "skillstate-task")] = lifecycle_skill()
     with _lock(project):
         manifest = _manifest(project)
+        hosts = list(dict.fromkeys(hosts or (manifest.get("hosts") if name else None) or HOSTS))
+        if any(host not in HOSTS for host in hosts):
+            raise ValidationError("Unknown host")
+        if mcp and importlib.util.find_spec("mcp") is None:
+            raise ValidationError("Install skillstate-kit[mcp] before enabling MCP")
+        skill_name, content = (name, wrapper(name)) if name else ("generate-skill-state", BOOTSTRAP)
+        files = {}
+        if "codex" in hosts or "antigravity" in hosts:
+            files[f".agents/skills/{skill_name}/SKILL.md"] = content
+        if "claude-code" in hosts:
+            files[f".claude/skills/{skill_name}/SKILL.md"] = content
+        if name is None:
+            for relative in list(files):
+                files[relative.replace("generate-skill-state", "skillstate-task")] = (
+                    lifecycle_skill()
+                )
         manifest["hosts"] = list(dict.fromkeys([*manifest.get("hosts", []), *hosts]))
         changes = {}
         if name is None:
@@ -415,6 +417,7 @@ def doctor(project: Path) -> dict:
     return {
         "ok": bool(checks) and all(check["ok"] for check in checks),
         "checks": checks,
+        "installed_hosts": manifest.get("hosts", []),
         "host_executables": {
             host: shutil.which(binary)
             for host, binary in (

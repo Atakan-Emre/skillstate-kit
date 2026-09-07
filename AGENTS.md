@@ -9,4 +9,4 @@ This repository implements skillstate-kit, an independent compiler and runtime f
 - Preserve operation uncertainty, revision checks, source integrity and user-owned configuration.
 - Clearly label scripted models. Never fabricate live integration, benchmark or platform test results.
 - Route CLI and MCP mutations through shared services instead of duplicating state logic.
-- Planning notes in `docs/research/` are proposals. Public documentation must describe implemented behavior.
+- Public documentation must describe implemented behavior. Keep exploratory notes and local probes outside tracked product documentation.

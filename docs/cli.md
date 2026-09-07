@@ -35,6 +35,8 @@ It refuses to remove user-modified entries. `uninstall` does not perform this
 separate desktop disconnection. See [compatibility](compatibility.md) for the
 tested platform/surface limitations.
 
+From 0.2.2, `generate --install` reuses recorded project host selection. Without a recorded selection it retains the three-template fallback. Wrapper installation does not enable MCP.
+
 `generate` defaults to bounded tracking state while preserving the source instructions. For a Python project, `--profile python-tests` supplies test-oriented tracking instructions. It scans AST without importing project modules. Multiple source SKILL.md files require selecting one; it does not silently combine unrelated skills.
 
 Supported scanning includes Markdown, Python, TOML, YAML and JSON. Root `.gitignore` and `.skillstateignore` patterns apply. Nested ignore files are not interpreted in this release. Limits: 128 files, 96 KB/file, 512 KB total. Narrow large projects rather than uploading them wholesale. Excluded files include environments, builds, known secret files and generated wrappers.

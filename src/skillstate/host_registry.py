@@ -56,6 +56,13 @@ class ProjectHost:
             in (self.config, self.instructions, "interpreter:" + self.config, "mcp dependency")
             or c["check"].startswith(self.skills)
         ]
+        relevant.append(
+            {
+                "check": "registered:" + self.name,
+                "kind": "installation",
+                "ok": self.name in report["installed_hosts"],
+            }
+        )
         return {
             "host": self.name,
             "ok": bool(relevant) and all(c["ok"] for c in relevant),

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2 — predictable host installation
+
+- Generated wrappers now reuse recorded host selection instead of adding unselected host directories. Uninitialized projects retain the existing three-template fallback.
+- Host-specific diagnostics require that host's installation record; shared skill files alone no longer produce a false healthy result for an uninstalled host.
+- Consolidate setup, upgrade and removal instructions, distinguish additive CLI-only setup from MCP removal, and remove obsolete planning/probe files from the public tree.
+- Generate the PyPI description from README and check distribution asset consistency in CI.
+
 ## 0.2.1 — task integrity hardening
 
 - Prevent generic task updates and operation reservations from replacing checkpoint-owned progress; blocker updates remain supported. CLI and MCP share the same service guard.

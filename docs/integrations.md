@@ -4,7 +4,29 @@ The Python engine owns state. Hosts own their model, conversation, permissions
 and native tools. Installation encourages lifecycle use; it cannot force a host
 model to obey instructions or remove its native transcript.
 
-## Minimal setup
+## Recommended installation
+
+Use Python 3.11+ in the target project's virtual environment. Select the host
+explicitly for predictable setup; replace `codex` with `claude-code` or
+`antigravity` when appropriate:
+
+```bash
+python -m pip install -U "skillstate-kit[mcp]"
+skillstate init --host codex --mcp
+skillstate doctor codex
+skillstate doctor --mcp
+```
+
+Reload the host's project discovery afterward. `doctor codex` checks the chosen
+installation; `doctor --mcp` checks project configuration and the actual local
+MCP transport. Neither substitutes for a live host task.
+
+For multiple hosts, repeat the flags in one command:
+`skillstate init --host codex --host claude-code --mcp`.
+Claude Desktop Chat uses `skillstate connect claude-desktop` instead of an init
+host flag. It is a separate application connection.
+
+## CLI-only and automatic setup
 
 ```bash
 python -m pip install skillstate-kit
@@ -31,6 +53,47 @@ skillstate hosts detect
 Without explicit host flags, `init` enables MCP when its extra is already
 installed. Explicit host flags retain the historical opt-in `--mcp` behavior.
 Detection is filesystem/PATH evidence, not authentication or live-host testing.
+
+| Command | Selection | MCP behavior |
+|---|---|---|
+| `init --host codex --mcp` | Codex only | Add/update its MCP entry |
+| `init --host codex --no-mcp` | Codex only | Install CLI skills; add no MCP entry |
+| `init` | Detected project hosts; all three templates if none detected | Add MCP if the extra is installed |
+| `connect codex` | Codex only | MCP-enabled setup alias |
+| `generate SOURCE --install` | Previously selected project hosts; all three if no selection exists | Install wrappers; add no MCP entry |
+
+Setup is additive. Omitting `--mcp` or using `--no-mcp` does **not** remove an
+existing MCP entry. To switch an existing host to CLI-only, run
+`skillstate disconnect codex`, inspect any retained-file warnings, then run
+`skillstate init --host codex --no-mcp`.
+
+Generated wrapper installation respects recorded host selection from 0.2.2.
+Do not use bare `init` when only one specific host should be configured.
+Host-specific `doctor` requires a recorded installation. For a legacy 0.1.x
+receipt, rerun explicit `init` to record the selected host. Detection alone is
+not an installation receipt. If earlier automatic setup installed unwanted hosts,
+remove them with `skillstate disconnect HOST` before continuing.
+
+## Upgrade and remove
+
+Upgrade the package in the same virtual environment, then rerun the same explicit
+setup command to refresh the managed skills and local interpreter paths:
+
+```bash
+python -m pip install -U "skillstate-kit[mcp]"
+skillstate init --host codex --mcp
+skillstate doctor --mcp
+```
+
+`disconnect HOST` removes that host's owned integration content. `uninstall`
+removes all project integrations; Desktop must be disconnected separately.
+Both preserve task state. Modified user files are retained and listed. Empty
+directories or configuration sections can remain intentionally; they do not
+represent an active server. Do not delete `.skillstate/local/` to reinstall.
+
+Plugin assets are optional. Choose either normal project skills or a plugin as
+the instruction-distribution path to avoid duplicate discovery. See
+[plugin distribution](../integrations/README.md).
 
 ## Codex
 

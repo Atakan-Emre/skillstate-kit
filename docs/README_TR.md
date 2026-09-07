@@ -19,11 +19,13 @@ python -m pip install "skillstate-kit[mcp]"
 Ardından kullanacağınız projenin klasöründe:
 
 ```text
-skillstate init
+skillstate init --host codex --mcp
 skillstate doctor --mcp
 ```
 
-0.2.0 ile `init`, algılanan proje ortamlarını seçer ve MCP kuruluysa yapılandırır. `skillstate hosts detect` seçim gerekçelerini gösterir. Yalnızca `pip install skillstate-kit` de yeterlidir: temel paket CLI üzerinden çalışır. Belirli bir ortam için `skillstate init --host codex --mcp` kullanabilirsiniz. MCP ayarları bu makineye ait Python/proje yollarını içerir.
+Örnek yalnızca Codex kurar. Claude Code için `--host claude-code`, Antigravity için `--host antigravity` kullanın. [Tek kurulum, güncelleme ve kaldırma rehberi](integrations.md).
+
+Host bayrağı olmadan `init`, algılanan proje ortamlarını seçer ve MCP kuruluysa yapılandırır. `skillstate hosts detect` seçim gerekçelerini gösterir. Yalnızca `pip install skillstate-kit` de yeterlidir: temel paket CLI üzerinden çalışır. Belirli bir ortam için `skillstate init --host codex --mcp` kullanabilirsiniz. MCP ayarları bu makineye ait Python/proje yollarını içerir.
 
 Agent oturumunu yeniledikten sonra normal görevinizi verin: “Bu projeye JWT doğrulaması ekle ve testlerini çalıştır.” Kurulan yönergeler agent'ı mevcut görevi bulmaya, uygun kaydı sürdürmeye ve kanıtlı adımlar kaydetmeye yönlendirir. Host'un yönergeleri izlemesi gerekir; paket her araç çağrısını zorla denetlemez.
 

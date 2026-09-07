@@ -23,7 +23,7 @@
 
 Keep task progress, observations, evidence and operation outcomes outside conversational history. Use the same Python engine through the SDK, CLI or MCP, with project integrations for Codex and Claude.
 
-[PyPI](https://pypi.org/project/skillstate-kit/) · [Documentation](docs/integrations.md) · [Research alignment](docs/paper-alignment.md) · [Validation](docs/validation.md)
+[PyPI](https://pypi.org/project/skillstate-kit/) · [Documentation](docs/README.md) · [Research alignment](docs/paper-alignment.md) · [Validation](docs/validation.md)
 
 ## Quick start
 
@@ -31,9 +31,11 @@ Requires Python 3.11 or newer. Run inside the project you want to integrate:
 
 ```bash
 python -m pip install -U "skillstate-kit[mcp]"
-skillstate init
+skillstate init --host codex --mcp
 skillstate doctor --mcp
 ```
+
+The example selects Codex. Use `--host claude-code` or `--host antigravity` for another project host, or `skillstate connect claude-desktop` for Desktop Chat. [Installation, upgrades and removal](docs/integrations.md).
 
 Restart or reload your agent's project discovery, then give it a normal task:
 
