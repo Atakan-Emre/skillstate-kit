@@ -8,7 +8,7 @@ then exercised from the development checkout. No production data was used.
 | Host/surface | Observation | Verdict |
 |---|---|---|
 | Installed Codex CLI, actual model | Eight successful MCP calls; invoice total and artifact persisted; owner transferred to claude-desktop | First review and handoff passed |
-| Claude Desktop 1.46388.4.0, Chat | Local server discovered; actual model requested `run_context`; app waited for the user's tool permission | Discovery passed; continuation not yet verified |
+| Claude Desktop 1.46388.4.0, Chat | Server discovered; actual model requested `run_context`; app displayed tool permission, then the call timed out without a result | Discovery passed; continuation failed in this attempt |
 | Claude Desktop Cowork/Code | App displayed a reserved internal server name warning for this local entry | Not supported by this tested connection |
 | Antigravity desktop, Gemini 3.8 Flash High | Opened the project; model reported MCP tools unavailable; no skill or run was created | Requested MCP task failed |
 | Separate Antigravity IDE | Login/onboarding screen, including optional migration dialog | No model task executed |
@@ -30,10 +30,15 @@ write tool and stopped without opening a run. The successful retry used Codex's
 supported automatic review mode with a workspace-write sandbox. This is a host
 approval requirement, not permission to bypass safeguards.
 
-Claude's first tool request was not approved by the test driver. Consequently,
-this report does not claim a completed Codex-to-Claude workflow. Ordinary user
-tool approval remains part of setup. The native computer-use driver cannot
-grant security/privacy permissions on the user's behalf.
+Claude's first tool request was not approved by the test driver. It eventually
+returned a timeout/no-result error after approximately four minutes. The UI
+suggested an unresponsive or crashed server; that explanation was not established.
+An independent `doctor --mcp` check on the same project subsequently passed.
+No second review or completion was recorded. This report does not claim a
+completed Codex-to-Claude workflow. Ordinary user tool approval remains part of
+setup. The native computer-use driver cannot grant security/privacy permissions
+on the user's behalf. Retry from the saved run after resolving host permissions;
+do not recreate or reset the run.
 
 Antigravity wrote its own final diagnostic reporting unavailable tools. Its
 local tool cache contained the 12 server schemas, but that did not prove the

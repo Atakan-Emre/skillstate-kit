@@ -55,7 +55,7 @@ skillstate doctor --mcp
 
 Fully quit and reopen Claude Desktop, use **Chat**, and approve the tool calls you intend to allow. The installer preserves unrelated settings and uses a separate server name per project. Windows standalone/Microsoft Store and macOS paths are supported; `--config PATH` selects a custom location. If two Windows configs exist, choose explicitly. Disconnect with `skillstate disconnect claude-desktop`; run data remains intact.
 
-Live acceptance evidence: Codex used eight real MCP calls to record a synthetic invoice review and hand it to Claude Desktop. Desktop discovered the server and requested tool permission; the second review was not completed at the time of this release. The tested Antigravity desktop session reported MCP tools unavailable, and its separate IDE required login. Generated configuration and transport tests do not establish successful execution in those hosts. No claim of universal desktop compatibility is made.
+Live acceptance evidence: Codex used eight real MCP calls to record a synthetic invoice review and hand it to Claude Desktop. Desktop discovered the server and requested tool permission, but the call later timed out without a result; the second review was not completed. An independent MCP transport check subsequently passed. The tested Antigravity desktop session reported MCP tools unavailable, and its separate IDE required login. Generated configuration and transport tests do not establish successful execution in those hosts. No claim of universal desktop compatibility is made.
 
 ## Python integration
 
