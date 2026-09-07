@@ -1,8 +1,8 @@
 # Releasing
 
-## Private distribution
+## Release preparation
 
-The repository currently stays private. Build a wheel/sdist after the test and packaging gates pass; attach them to a private prerelease for collaborators. Users need repository/release access. No public PyPI release should be inferred from a private GitHub prerelease.
+The repository is public and MIT licensed. Build a wheel/sdist after the test and packaging gates pass; attach the verified distributions to the GitHub release. Alpha versions can be marked as prereleases. A GitHub release does not by itself establish that the package has been published on PyPI.
 
 1. Update version in `pyproject.toml`, `src/skillstate/__init__.py` and `CITATION.cff`.
 2. Update CHANGELOG and regenerate `uv.lock`.
@@ -13,7 +13,7 @@ The repository currently stays private. Build a wheel/sdist after the test and p
 
 ## PyPI publication
 
-PyPI publication makes distributions publicly downloadable, even if GitHub remains private. Version 0.1.1 is published; see [release evidence](releases/0.1.1.md). Registry presence and workflow results, not a prepared document, establish that a new publication actually happened.
+Version 0.1.2 is published on PyPI; see [release evidence](releases/0.1.2.md). Registry presence and workflow results, not a prepared document, establish that a new publication actually happened.
 
 The manually dispatched `.github/workflows/publish.yml` runs the full CI matrix, builds once and verifies a clean wheel installation before uploading to PyPI. It then downloads both published distributions, verifies their SHA-256 hashes against the tested artifacts and exercises the downloaded wheel in a fresh environment. Publishing jobs alone receive `id-token: write`; they do not check out or execute project code. `skip-existing` supports interrupted-run recovery; differing registry hashes fail verification.
 
@@ -32,7 +32,7 @@ Register a pending GitHub Trusted Publisher in each account's Publishing setting
 
 The two registries use separate accounts and publisher registrations. Limit the corresponding GitHub environments to branch `main`. Do not create broad account tokens for this workflow. Only maintainers with repository access should dispatch it. New publisher registrations require an authenticated account and any PyPI-required email/2FA setup.
 
-After publication, verify `https://pypi.org/pypi/skillstate-kit/0.1.1/json`, the exact uploaded hashes, and clean installation using `python -m pip install skillstate-kit==0.1.1`. Tag the tested release commit and update the release notes with the publishing run URL. Never reuse a published version for changed distribution bytes.
+After publication, verify the version-specific PyPI JSON endpoint (for example, `https://pypi.org/pypi/skillstate-kit/0.1.2/json`), the exact uploaded hashes, and clean installation using `python -m pip install skillstate-kit==0.1.2`, substituting the version being released. Tag the tested release commit and update the release notes with the publishing run URL. Never reuse a published version for changed distribution bytes.
 
 Reference: [PyPI Trusted Publishers](https://docs.pypi.org/trusted-publishers/creating-a-project-through-oidc/).
 

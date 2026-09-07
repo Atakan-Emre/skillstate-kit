@@ -23,7 +23,7 @@
 
 Keep the procedure in your `SKILL.md`. Generate a bounded state definition, save progress and evidence, and let another session continue from the checkpoint. Use the CLI and MCP server from your agent, or embed the managed runtime in Python.
 
-**Available on [PyPI](https://pypi.org/project/skillstate-kit/).** Version `0.1.2` is an alpha. The package is public; the development repository is private. Installation does not require repository access.
+**Available on [PyPI](https://pypi.org/project/skillstate-kit/), open source under the [MIT license](LICENSE).** Version `0.1.2` is an alpha. Install the package from PyPI or explore and contribute to this repository.
 
 **External-project validation:** the existing Hugging Face smolagents SQL agent
 produced the same five correct results on 1,000 synthetic receipts before and

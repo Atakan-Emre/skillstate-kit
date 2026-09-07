@@ -2,7 +2,7 @@
 
 ## Reporting
 
-Use GitHub private vulnerability reporting when available. While the repo is private, contact the maintainer through an existing private channel. Do not put credentials or exploitable production details in an issue or test another person's services.
+Use [GitHub private vulnerability reporting](https://github.com/Atakan-Emre/skillstate-kit/security/advisories/new) for security issues. Do not put credentials or exploitable production details in a public issue or test another person's services.
 
 ## Scope
 
