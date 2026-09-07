@@ -4,6 +4,11 @@ Tests validate contracts, not an absence of all possible defects. A successful g
 
 ## Portable task lifecycle (0.2.0)
 
+The [0.2.0 publication workflow](https://github.com/Atakan-Emre/skillstate-kit/actions/runs/34118611608)
+passed the six OS/Python jobs, package checks and downloaded PyPI verification.
+Linux/Python 3.11 passed **135 tests**, **88.93%** coverage. Local Windows/Python
+3.12 passed **134 tests**, with one symlink-privilege skip and **88.63%** coverage.
+
 The [coding-agent report](benchmarks/coding-agent.md) records four real Codex
 sessions per mode, independent correctness checks and actual host-reported usage.
 Persisted continuation passed; token and latency savings did not. The existing

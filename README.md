@@ -25,7 +25,7 @@ Keep task progress, observations, artifacts and operation state outside conversa
 
 By reducing redundant work and providing bounded application state, skillstate-kit is designed to improve long-horizon execution efficiency. Provider-level token, latency and cost effects depend on the host and require separate measurement.
 
-**Available on [PyPI](https://pypi.org/project/skillstate-kit/), open source under the [MIT license](LICENSE).** The project is in alpha; this checkout documents the `0.2.0` release candidate. Install the package from PyPI or explore and contribute to this repository.
+**Version [0.2.0 is available on PyPI](https://pypi.org/project/skillstate-kit/0.2.0/), open source under the [MIT license](LICENSE).** The project is in alpha. Install the package from PyPI or explore and contribute to this repository.
 
 **External-project validation:** the existing Hugging Face smolagents SQL agent
 produced the same five correct results on 1,000 synthetic receipts before and
