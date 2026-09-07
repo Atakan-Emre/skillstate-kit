@@ -1,4 +1,8 @@
+![skillstate-kit — Oturumlar arasında kalıcı görev durumu](assets/logo.svg)
+
 # Türkçe başlangıç
+
+[PyPI paketi](https://pypi.org/project/skillstate-kit/) · [Çalışan Python örneği](../README.md#python-integration) · [Kabul testleri](host-acceptance.md)
 
 skillstate-kit, mevcut agent skill'lerini kalıcı ve doğrulanan görev durumuyla kullanmanızı sağlar. Sürüm alpha durumundadır; geliştirme deposu private kalırken paket PyPI üzerinden dağıtılır.
 
@@ -15,7 +19,7 @@ Ardından kullanacağınız projenin klasöründe:
 
 ```text
 skillstate init --host codex --host claude-code --host antigravity --mcp
-skillstate generate skills/qa/SKILL.md --install
+skillstate generate skills/qa/SKILL.md --name qa-state --install
 skillstate validate qa-state
 skillstate doctor --mcp
 ```
@@ -26,13 +30,24 @@ skillstate doctor --mcp
 
 Claude Desktop'ın **Chat** bölümünü kullanıyorsanız ayrıca `skillstate connect claude-desktop` çalıştırıp uygulamadan tamamen çıkın ve yeniden açın. Bu bağlantı Claude Code kurulumundan ayrıdır. Araç izinlerini uygulama içinde siz verirsiniz. `skillstate disconnect claude-desktop` bağlantıyı kaldırır, görev durumunu korur. Windows Store sürümü de desteklenir; birden fazla ayar dosyası bulunursa `--config DOSYA` ile seçilir.
 
-Gerçek uygulama testlerinin sonucu [kabul raporunda](host-acceptance.md), tekrar edilebilir örnek ise [örnek projede](../examples/desktop_acceptance/README.md). Codex'in gerçek MCP devri doğrulandı; diğer uygulamalardaki eksik onay ve bağlantı adımları başarılı sayılmadı.
+Gerçek uygulama testlerinin sonucu [kabul raporunda](host-acceptance.md), tekrar edilebilir örnek ise [örnek projede](../examples/desktop_acceptance/README.md). Codex'te gerçek MCP üretimi ve ayrı oturumdan devam etme; ayrıca Codex → Claude Desktop Chat devri ve ikinci incelemeyle tamamlama doğrulandı. Claude Code için canlı uygulama testi yapılmadı. Antigravity masaüstü denemesinde MCP araçları kullanılamadı; bu entegrasyon başarılı sayılmıyor.
 
 Kurulumdan sonra agent'a “Generate skill state; bu skill'i durum yapısına dönüştür” diyebilirsiniz. Üretici kaynak envanterini hazırlayıp agent'ın önerdiği şemayı doğrular.
 
 Doğrudan `generate`, yönergeleri koruyan sınırlı bir genel ilerleme şeması oluşturur. Alana özel dönüşüm için agent destekli `--prepare`/`--proposal` akışı veya yapılandırılmış `--base-url`/`--model` kullanılır. Terminal, IDE model hesabını otomatik kullanmaz.
 
 ## Çalıştırma ve devam
+
+Üretim komutu görevi çalıştırmaz. Agent'a “qa-state skill'ini bu görevde kullan, ilerlemeyi ve kanıtları kaydet” diyerek çalışmayı başlatın. Durumu terminalden incelemek için:
+
+```text
+skillstate run open qa-state --owner codex --id qa-001
+skillstate run context qa-001
+skillstate run events qa-001
+skillstate status
+```
+
+Her yeni görev için farklı bir run ID kullanın. Var olan göreve devam ederken yeniden açmak yerine mevcut durumu okuyun. Python ile doğrudan kullanım için [kopyalanıp çalıştırılabilen örneğe](../README.md#python-integration) bakın.
 
 Üretilen skill, state açma, okuma, güncelleme, işlem sonucu kaydetme ve ortamlar arasında devretme adımlarını içerir. Python projeleri `SkillRuntime` ile bütün model/araç döngüsünü yönetebilir.
 

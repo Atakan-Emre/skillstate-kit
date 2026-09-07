@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="320" viewBox="0 0 1040 320" role="img" aria-labelledby="title desc">
+  <title id="title">skillstate-kit — State that survives the next session.</title>
+  <desc id="desc">Connected checkpoints form a mint green state symbol beside the skillstate-kit wordmark on a warm cream background.</desc>
+  <rect width="1040" height="320" rx="24" fill="#f6f4ed"/>
+  <path d="M0 254H1040M832 0V320" stroke="#102b29" stroke-opacity=".06"/>
+  <circle cx="932" cy="92" r="124" fill="none" stroke="#102b29" stroke-opacity=".06"/>
+  <circle cx="932" cy="92" r="84" fill="none" stroke="#102b29" stroke-opacity=".06"/>
+  <g transform="translate(56 65)">
+    <rect width="144" height="144" rx="36" fill="#102b29"/>
+    <path d="M44 49H96V97H44" fill="none" stroke="#74dcae" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="28" y="33" width="32" height="32" rx="10" fill="#74dcae"/>
+    <rect x="80" y="81" width="32" height="32" rx="10" fill="#74dcae"/>
+    <circle cx="44" cy="97" r="16" fill="#f6f4ed"/>
+    <path d="M37 97L42 102L51 92" fill="none" stroke="#102b29" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <g fill="#102b29" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+    <text x="232" y="94" font-size="12" font-weight="700" letter-spacing="3">PORTABLE AGENT STATE</text>
+    <text x="228" y="163" font-size="61" font-weight="700" letter-spacing="-2">skillstate<tspan font-weight="400" fill="#42655b">-kit</tspan></text>
+    <text x="232" y="203" font-size="23">State that survives the next session.</text>
+    <text x="56" y="291" font-size="13" font-weight="600" letter-spacing="1.5">GENERATE</text>
+    <text x="224" y="291" font-size="13" font-weight="600" letter-spacing="1.5">VALIDATE</text>
+    <text x="392" y="291" font-size="13" font-weight="600" letter-spacing="1.5">RESUME</text>
+    <text x="805" y="291" font-size="13" fill="#42655b">Python  /  CLI  /  MCP</text>
+  </g>
+  <path d="M169 286H191M184 280L191 286L184 292M337 286H359M352 280L359 286L352 292" fill="none" stroke="#42655b" stroke-width="1.5"/>
+  <circle cx="958" cy="61" r="7" fill="#d87947"/>
+</svg>
