@@ -29,7 +29,7 @@ def main():
         root = Path(temporary)
         venv.EnvBuilder(with_pip=True).create(root / "env")
         python = root / "env" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
-        run([str(python), "-m", "pip", "install", str(wheels[0]) + "[mcp]"], root)
+        run([str(python), "-m", "pip", "install", str(wheels[0])], root)
         project = root / "project with spaces"
         project.mkdir()
         (project / "SKILL.md").write_text(
@@ -37,6 +37,21 @@ def main():
             encoding="utf-8",
         )
         command = [str(python), "-m", "skillstate", "--project", str(project)]
+        run(command + ["init", "--host", "codex", "--host", "claude-code", "--no-mcp"], root)
+        assert (project / ".agents/skills/skillstate-task/SKILL.md").is_file()
+        assert (project / ".claude/skills/skillstate-task/SKILL.md").is_file()
+        smoke = """
+from pathlib import Path
+from skillstate import ProjectService
+from skillstate.artifacts import ArtifactStore
+s = ProjectService(Path.cwd())
+r = s.start_task('Installed wheel acceptance', 'python', ['verify'])
+key = ArtifactStore(Path.cwd()).put('Installed SDK and canonical lifecycle asset verified')
+r = s.checkpoint_task(r['run_id'], 'python', 0, 'verify', 'Checked package', [key], [])
+assert s.complete_task(r['run_id'], 'python', r['revision'])['status'] == 'completed'
+"""
+        run([str(python), "-c", smoke], project)
+        run([str(python), "-m", "pip", "install", str(wheels[0]) + "[mcp]"], root)
         assert json.loads(run(command + ["demo"], root))["status"] == "completed"
         run(command + ["init", "--mcp"], root)
         generated = json.loads(run(command + ["generate", "SKILL.md", "--install"], root))
@@ -48,6 +63,7 @@ def main():
                 {
                     "wheel": wheels[0].name,
                     "fresh_install": True,
+                    "base_package_lifecycle": True,
                     "generation": True,
                     "mcp_transport": doctor["mcp_transport"],
                 }

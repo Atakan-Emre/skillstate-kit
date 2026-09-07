@@ -1,0 +1,11 @@
+{
+  "name": "skillstate-kit",
+  "version": "0.2.0",
+  "description": "Portable execution state, evidence-backed progress and explicit task continuation.",
+  "author": {
+    "name": "Atakan Emre"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Atakan-Emre/skillstate-kit",
+  "skills": "./skills/"
+}

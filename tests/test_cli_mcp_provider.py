@@ -214,7 +214,7 @@ def test_cli_semantic_generation_and_real_doctor(project, capsys):
     capsys.readouterr()
     assert main(prefix + ["doctor", "--mcp"]) == 0
     report = json.loads(capsys.readouterr().out)
-    assert report["mcp_transport"]["tool_count"] == 12
+    assert report["mcp_transport"]["tool_count"] == 16
     assert main(prefix + ["uninstall"]) == 0
 
 
@@ -285,3 +285,58 @@ def test_cli_unicode_artifact_survives_ascii_output_pipe(project):
     )
     assert result.returncode == 0, result.stderr
     assert json.loads(result.stdout)["content"] == content
+
+
+def test_real_mcp_task_lifecycle_uses_canonical_store(project):
+    from skillstate.artifacts import ArtifactStore
+    from skillstate.service import ProjectService
+
+    async def exercise():
+        params = StdioServerParameters(
+            command=sys.executable, args=["-m", "skillstate", "--project", str(project), "serve"]
+        )
+        async with stdio_client(params) as (read, write), ClientSession(read, write) as client:
+            await client.initialize()
+            names = {t.name for t in (await client.list_tools()).tools}
+            assert {
+                "run_open",
+                "run_context",
+                "run_update",
+                "run_reserve",
+                "run_record_result",
+                "run_unknown",
+                "run_handoff",
+                "run_status",
+                "artifact_put",
+                "artifact_read",
+                "generation_prepare",
+                "generation_apply",
+            } <= names
+            assert {"run_find", "task_start", "task_checkpoint", "task_complete"} <= names
+            result = await client.call_tool(
+                "task_start",
+                {"goal": "MCP task", "owner": "codex", "steps": ["verify"], "run_id": "task-mcp"},
+            )
+            assert not result.isError
+            evidence = ArtifactStore(project).put("Actual protocol fixture evidence")
+            result = await client.call_tool(
+                "task_checkpoint",
+                {
+                    "run_id": "task-mcp",
+                    "owner": "codex",
+                    "revision": 0,
+                    "step": "verify",
+                    "summary": "Verified protocol",
+                    "evidence": [evidence],
+                    "resources": [],
+                },
+            )
+            assert not result.isError
+            result = await client.call_tool(
+                "task_complete", {"run_id": "task-mcp", "owner": "codex", "revision": 1}
+            )
+            assert not result.isError
+            assert not (await client.call_tool("run_find", {"goal": "MCP task"})).isError
+        assert ProjectService(project).run_context("task-mcp")["status"] == "completed"
+
+    asyncio.run(asyncio.wait_for(exercise(), timeout=30))

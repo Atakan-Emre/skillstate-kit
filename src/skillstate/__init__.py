@@ -13,9 +13,10 @@ from .errors import (
 from .models import Limits, Skill, Tool, ToolResult
 from .runtime import SkillRuntime
 from .schema import apply_patch
+from .service import ProjectService
 from .store import SQLiteStore
 
-__version__ = "0.1.2"
+__version__ = "0.2.0"
 __all__ = [
     "BudgetExceeded",
     "ConflictError",
@@ -32,4 +33,5 @@ __all__ = [
     "apply_patch",
     "SkillRuntime",
     "SQLiteStore",
+    "ProjectService",
 ]

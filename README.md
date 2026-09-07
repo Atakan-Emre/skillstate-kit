@@ -19,17 +19,24 @@
 
 # skillstate-kit
 
-**Turn existing agent skills into portable, validated execution state.**
+**A portable, validated execution-state layer for long-running AI agents.**
 
-Keep the procedure in your `SKILL.md`. Generate a bounded state definition, save progress and evidence, and let another session continue from the checkpoint. Use the CLI and MCP server from your agent, or embed the managed runtime in Python.
+Keep task progress, observations, artifacts and operation state outside conversational history. Use your existing agent through project skills, CLI or MCP, or embed the canonical runtime in Python. Task-specific semantic state remains supported; no custom Python agent is required for host integration.
 
-**Available on [PyPI](https://pypi.org/project/skillstate-kit/), open source under the [MIT license](LICENSE).** Version `0.1.2` is an alpha. Install the package from PyPI or explore and contribute to this repository.
+By reducing redundant work and providing bounded application state, skillstate-kit is designed to improve long-horizon execution efficiency. Provider-level token, latency and cost effects depend on the host and require separate measurement.
+
+**Available on [PyPI](https://pypi.org/project/skillstate-kit/), open source under the [MIT license](LICENSE).** The project is in alpha; this checkout documents the `0.2.0` release candidate. Install the package from PyPI or explore and contribute to this repository.
 
 **External-project validation:** the existing Hugging Face smolagents SQL agent
 produced the same five correct results on 1,000 synthetic receipts before and
 after integration. The managed run resumed in a new process after an injected
 interruption, without repeating completed queries.
 [Read the experiment and its scope](docs/smolagents-acceptance.md).
+
+**Coding-agent measurement:** four fresh Codex sessions completed the same persisted
+task and passed 29 independent checks. This small paired trial used **more**, not
+fewer, tokens and wall time with SkillState. [Read the measured results and
+limitations](docs/benchmarks/coding-agent.md) before making performance claims.
 
 ## Why skillstate-kit?
 
@@ -49,10 +56,13 @@ Use Python **3.11 or newer**, preferably in your project's virtual environment:
 
 ```bash
 python -m pip install "skillstate-kit[mcp]"
-skillstate demo
+skillstate init
+skillstate doctor --mcp
 ```
 
-The demo uses a **scripted model** and local tools. No API key or model account is needed. It demonstrates the runtime; it does not measure real-model performance.
+Run setup inside your target project. `init` detects supported project hosts, installs lifecycle/generator skills and preserves unrelated instructions/configuration. Reload host discovery, then work normally—for example: **“Implement duration parsing for this project.”** The integration guides your agent to inspect existing runs, record evidence-backed milestones and validate completion.
+
+The base `pip install skillstate-kit` also works with `skillstate init` through CLI instructions. MCP is optional. `skillstate demo` remains an explicitly scripted offline example. See [host setup and distribution](docs/integrations.md) and [execution state versus chat history](docs/execution-state.md).
 
 For Python-only use, install `skillstate-kit`. Add the `http` extra when you need a configured JSON-compatible model endpoint: `python -m pip install "skillstate-kit[mcp,http]"`.
 
@@ -92,6 +102,8 @@ Direct CLI generation creates generic tracking state. Agent-assisted generation 
 
 ## Choose your environment
 
+Use `skillstate hosts detect` to inspect discovery evidence and `skillstate doctor codex` or `skillstate doctor claude-code` for focused checks. Detection is not a live execution test. Project instruction blocks encourage automatic lifecycle use; host/model selection and permissions still apply.
+
 | Environment | Setup inside your project | Verified scope |
 |---|---|---|
 | Codex | `skillstate init --host codex --mcp` | Real MCP generation and continuation across two model sessions passed. |
@@ -104,6 +116,12 @@ For Claude Desktop, **fully quit and reopen the app after connecting**, use Chat
 MCP configurations contain this machine's Python and project paths. Keep them local and repeat setup when changing machines or virtual environments. `doctor --mcp` checks the local server; it does not prove that a host's model can call it.
 
 See the [installation guide](docs/compatibility.md), [actual acceptance evidence](docs/host-acceptance.md), and [repeatable two-reviewer exercise](examples/desktop_acceptance/README.md).
+
+## Evidence-backed task lifecycle
+
+For a normal multi-step task, the agent can use `task_start`, `task_checkpoint` and `task_complete`. Identical goal/plan startup reuses its deterministic run ID; an intentionally new task can supply a new ID. A checkpoint references real artifacts and relevant resource fingerprints. Repeating a completed milestone requires a stated revalidation reason. Completion checks evidence integrity, remaining work, blockers and freshness—not the truth of arbitrary business claims.
+
+Existing semantic skills retain `run_open`/`run_update` and their own domain schema. All paths share one SQLite store and the existing pending/unknown operation protocol. See the [CLI reference](docs/cli.md).
 
 ## Inspect a checkpoint
 

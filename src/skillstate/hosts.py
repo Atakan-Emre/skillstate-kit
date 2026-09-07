@@ -15,6 +15,29 @@ from .errors import ConflictError, ValidationError
 from .jsonio import atomic_write, digest, dumps, loads, read_json, slug, within
 
 HOSTS = ("codex", "claude-code", "antigravity")
+BEGIN = "<!-- skillstate:begin -->"
+END = "<!-- skillstate:end -->"
+INSTRUCTION = (
+    BEGIN
+    + "\nFor multi-step tasks, use the skillstate-task skill: inspect compatible runs before starting, read canonical state, preserve completed work and evidence, and validate completion. Do not repeat completed work without a verification/drift/uncertainty/user reason. SkillState does not replace native chat history.\n"
+    + END
+)
+
+
+def lifecycle_skill() -> str:
+    from importlib.resources import files
+
+    return files("skillstate").joinpath("assets/task-SKILL.md").read_text(encoding="utf-8-sig")
+
+
+def instruction_block(text: str) -> str | None:
+    if BEGIN not in text and END not in text:
+        return None
+    if text.count(BEGIN) != 1 or text.count(END) != 1 or text.index(END) < text.index(BEGIN):
+        raise ConflictError("Ambiguous SkillState instruction markers")
+    return text[text.index(BEGIN) : text.index(END) + len(END)]
+
+
 BOOTSTRAP = """---
 name: generate-skill-state
 description: Generate skill state from an existing SKILL.md or project, validate its schema, and install portable state-backed skills. Use when asked to generate skill state, convert a skill to state, or set up skillstate-kit.
@@ -189,9 +212,39 @@ def install(
         files[f".agents/skills/{skill_name}/SKILL.md"] = content
     if "claude-code" in hosts:
         files[f".claude/skills/{skill_name}/SKILL.md"] = content
+    if name is None:
+        for relative in list(files):
+            files[relative.replace("generate-skill-state", "skillstate-task")] = lifecycle_skill()
     with _lock(project):
         manifest = _manifest(project)
+        manifest["hosts"] = list(dict.fromkeys([*manifest.get("hosts", []), *hosts]))
         changes = {}
+        if name is None:
+            instructions = manifest.setdefault("instructions", {})
+            for host, relative in (("codex", "AGENTS.md"), ("claude-code", "CLAUDE.md")):
+                if host not in hosts:
+                    continue
+                path = within(project, relative)
+                if path.exists() and path.stat().st_size > 512000:
+                    raise ValidationError("Project instruction file is too large")
+                text = path.read_text(encoding="utf-8") if path.exists() else ""
+                block = instruction_block(text)
+                previous = instructions.get(relative, {})
+                if block and digest(block) not in (digest(INSTRUCTION), previous.get("hash")):
+                    raise ConflictError(f"User-modified instruction block: {relative}")
+                updated = (
+                    text.replace(block, INSTRUCTION)
+                    if block
+                    else text + ("\n\n" if text else "") + INSTRUCTION + "\n"
+                )
+                if updated != text:
+                    changes[relative] = updated
+                instructions[relative] = {
+                    "hash": digest(INSTRUCTION),
+                    "created": previous.get("created", not path.exists()),
+                    "separator": previous.get("separator", "\n\n" if text else ""),
+                }
+
         for relative, text in files.items():
             path = within(project, relative)
             existing_hash = digest(path.read_bytes()) if path.exists() else None
@@ -230,12 +283,50 @@ def install(
     }
 
 
-def uninstall(project: Path) -> dict:
+def uninstall(project: Path, hosts: list[str] | None = None) -> dict:
     project = project.resolve()
     with _lock(project):
         manifest = _manifest(project)
         changes, retained = {}, []
+        if hosts is not None and any(host not in HOSTS for host in hosts):
+            raise ValidationError("Unknown host")
+        remaining_hosts = set(manifest.get("hosts", HOSTS)) - set(hosts or HOSTS)
+
+        def selected(relative):
+            if relative.startswith(".agents/"):
+                return not remaining_hosts.intersection({"codex", "antigravity"})
+            if (
+                relative.startswith(".claude/")
+                or relative == ".mcp.json"
+                or relative == "CLAUDE.md"
+            ):
+                return "claude-code" not in remaining_hosts
+            return "codex" not in remaining_hosts
+
+        for relative, record in list(manifest.get("instructions", {}).items()):
+            if not selected(relative):
+                continue
+            path = within(project, relative)
+            text = path.read_text(encoding="utf-8") if path.exists() else ""
+            try:
+                block = instruction_block(text)
+            except ConflictError:
+                retained.append(relative)
+                continue
+            if block and digest(block) != record["hash"]:
+                retained.append(relative)
+                continue
+            if block:
+                wrapped = record.get("separator", "") + block + "\n"
+                updated = (
+                    text.replace(wrapped, "", 1) if wrapped in text else text.replace(block, "")
+                )
+                changes[relative] = None if record["created"] and not updated.strip() else updated
+            del manifest["instructions"][relative]
+        manifest["hosts"] = sorted(remaining_hosts)
         for relative, fingerprint in list(manifest["files"].items()):
+            if not selected(relative):
+                continue
             path = within(project, relative)
             if path.exists() and digest(path.read_bytes()) != fingerprint:
                 retained.append(relative)
@@ -244,6 +335,10 @@ def uninstall(project: Path) -> dict:
                 changes[relative] = None
             del manifest["files"][relative]
         for relative, entry in list(manifest["configs"].items()):
+            if relative == ".agents/mcp_config.json" and "antigravity" in remaining_hosts:
+                continue
+            if relative != ".agents/mcp_config.json" and not selected(relative):
+                continue
             path = within(project, relative)
             if path.exists():
                 doc = _config_document(path, entry["format"])
@@ -273,6 +368,14 @@ def doctor(project: Path) -> dict:
     project = project.resolve()
     manifest = _manifest(project)
     checks = []
+    for relative, record in manifest.get("instructions", {}).items():
+        path = within(project, relative)
+        try:
+            block = instruction_block(path.read_text(encoding="utf-8")) if path.exists() else None
+            ok = block is not None and digest(block) == record["hash"]
+        except (OSError, ConflictError):
+            ok = False
+        checks.append({"check": relative, "ok": ok, "kind": "lifecycle_instructions"})
     for relative, fingerprint in manifest["files"].items():
         path = within(project, relative)
         ok = path.is_file() and digest(path.read_bytes()) == fingerprint

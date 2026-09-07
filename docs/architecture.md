@@ -61,3 +61,21 @@ Installers preflight conflicts, atomically replace individual files and preserve
 ## Deliberate limits
 
 No automatic native transcript replacement, full tool interception, arbitrary code rewriting, multi-machine run transfer, lease expiration, automatic compensation or exactly-once external effect guarantee. A sync handler can continue after an async timeout; callbacks are not sandboxed. These limits are part of the contract, not features implied by the paper.
+
+## Host registry and optional task lifecycle (0.2)
+
+`host_registry` implements a small HostAdapter protocol over the existing hosts
+and desktop installers. It provides detect/install/uninstall/doctor/manifest
+operations. No host name enters the SQLite schema or managed runtime. Core state,
+operations, evidence and bounded model inputs retain their existing boundaries.
+
+`lifecycle` defines an optional task profile and evidence/freshness validation.
+`ProjectService` exposes start_task, checkpoint_task, complete_task and find_runs
+in addition to the existing semantic run operations. CLI and the four additive
+MCP tools call this same service. SQLite remains schema v1; old imports and all
+twelve original MCP tools are preserved.
+
+Milestone records live in the run's validated state, not a second database.
+Artifact bodies and the event audit remain separate from working context. The
+profile is not forced onto domain-specific schemas. See [state semantics](execution-state.md)
+and [host installation](integrations.md) for boundaries and downgrade guidance.

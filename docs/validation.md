@@ -2,6 +2,21 @@
 
 Tests validate contracts, not an absence of all possible defects. A successful generation reports structural checks; it does not invent live execution evidence.
 
+## Portable task lifecycle (0.2.0)
+
+The [coding-agent report](benchmarks/coding-agent.md) records four real Codex
+sessions per mode, independent correctness checks and actual host-reported usage.
+Persisted continuation passed; token and latency savings did not. The existing
+smolagents verifier was rerun successfully. New task stores were also read with
+the published 0.1.2 SDK, and the new SDK read the unchanged old smolagents store.
+SQLite schema version remains 1.
+
+Additional automated coverage checks evidence integrity, explicit revalidation,
+granular source drift, ownership/revision guards, pending/unknown recovery,
+instruction preservation and selective removal, and the additive sixteen-tool
+MCP contract. Claude Code live execution is not marked passing; the
+[manual fixture and handoff verifier](../examples/coding_agent/README.md) are provided.
+
 ## Desktop acceptance (2026-09-07)
 
 An additional [external-project experiment](smolagents-acceptance.md) used the

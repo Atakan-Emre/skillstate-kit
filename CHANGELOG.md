@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0 — portable task execution state
+
+- Add an optional evidence-backed task profile with ordered milestones, explicit revalidation, per-resource freshness checks and validated completion.
+- Add host discovery and a shared adapter contract; install project lifecycle instructions automatically without replacing unrelated AGENTS.md or CLAUDE.md content.
+- Add selective project host connection/removal and thin Codex/Claude plugin assets using the same Python runtime.
+- Add `run find`, `task start/checkpoint/complete` and four additive MCP tools. Preserve the original twelve MCP tools, public SDK imports, semantic skill bundles and SQLite v1 stores.
+- Add a real, paired Codex coding experiment with fresh sessions after stages 2/4/6, independent correctness checks, actual host-reported token usage and explicit measurement limitations.
+- Preserve the existing external smolagents acceptance. Claude Code live acceptance remains unexecuted; a reproducible manual procedure is provided.
+- Execution-state persistence does not control native host transcripts or guarantee token, latency or cost savings.
+
 ## 0.1.2 — desktop connection and host acceptance
 
 - Explicit `connect claude-desktop` / `disconnect claude-desktop` commands, with Microsoft Store and standalone Windows detection, macOS defaults and explicit config paths.

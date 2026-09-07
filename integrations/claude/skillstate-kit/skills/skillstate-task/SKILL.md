@@ -1,0 +1,18 @@
+---
+name: skillstate-task
+description: Maintain execution state for multi-step coding, implementation, debugging, testing and long-running tasks. Use at task start, after a restart, when resuming unfinished work or handing a task to another agent. Inspect existing SkillState runs before repeating completed work.
+---
+<!-- skillstate_generated: true -->
+
+Use the current user's task and authorization. SkillState tracks execution; it does not grant tool permissions or replace the host's conversation history.
+
+1. Before multi-step work, call run_find (CLI: `skillstate run find`) and inspect relevant goals. Reuse only a compatible intended run, never merely the most recent one. Read run_context before acting. Respect ownership and pending/unknown operations. Do not silently take ownership or reset a run.
+2. If no intended run exists, use task_start(goal, owner, steps). Choose a concise ordered plan with explicit final validation. CLI: `skillstate task start --goal "..." --owner HOST --steps plan.json`. plan.json is a JSON array of step names. No custom Python agent or pre-existing SKILL.md is required. Identical goal/plan reuses its deterministic run ID; for an intentionally new task with the same goal, explicitly choose a new run_id. Existing domain-specific skills can continue using run_open/run_update.
+3. Follow active state. Do not redo completed work merely because its old conversation or reasoning is absent. Inspect milestone_validity and required evidence. Repeat only for source/dependency drift, necessary verification, uncertainty or an explicit user request; record the reason.
+4. Use the host's normal authorized tools to do the work. Before external side effects, use run_reserve; afterward record the actual result using run_record_result. Unknown outcomes require explicit reconciliation against the external system. A repeated command can be necessary verification; command text is not an idempotency key.
+5. At a meaningful completed milestone, store actual output/evidence with artifact_put (CLI: `skillstate artifact put FILE`). Call task_checkpoint with run_id, owner, current revision, step, summary, evidence artifact IDs and affected/relevant resource paths. Record only what was actually observed. Include relevant dependency/configuration files when their changes would invalidate the evidence. Resources use project-relative paths and support absent files for deletions. Large logs stay in artifacts.
+6. Refresh context after every mutation. Before intentionally repeating a completed milestone, inspect its evidence and pass a nonempty revalidation_reason to task_checkpoint. Source changes only flag milestones referencing changed files; unrelated files do not invalidate everything.
+7. When all required steps and final checks have succeeded, resolve blockers, revalidate affected stale milestones and call task_complete. It verifies recorded evidence integrity and declared resource freshness; it does not independently prove business correctness. Never invent passing tests to satisfy completion.
+8. For another host, use run_handoff with the current owner/revision and explicit target owner. The next session reads the same run/context and required artifacts. It needs no previous conversation. Stay within the same project/store; this is not automatic transfer between machines.
+
+MCP tools are preferred when available; all operations also have CLI equivalents under `skillstate run`, `skillstate task`, and `skillstate artifact`. Use `skillstate ... --help` for file-backed CLI arguments. If skillstate is not installed, report the setup requirement instead of pretending state was saved.

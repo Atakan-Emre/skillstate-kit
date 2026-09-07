@@ -10,7 +10,7 @@ import sqlite3
 import sys
 from pathlib import Path
 
-from . import __version__, compiler, hosts
+from . import __version__, compiler, host_registry, hosts
 from .artifacts import ArtifactStore
 from .demo import run_demo
 from .errors import SkillStateError, ValidationError
@@ -31,9 +31,14 @@ def parser() -> argparse.ArgumentParser:
     init.add_argument("--host", action="append", choices=hosts.HOSTS)
     init.add_argument(
         "--mcp",
-        action="store_true",
+        action=argparse.BooleanOptionalAction,
+        default=None,
         help="Also merge local MCP configurations (requires mcp extra)",
     )
+    detection = subs.add_parser(
+        "hosts", help="Detect host executables/configuration without reading credentials"
+    )
+    detection.add_argument("action", nargs="?", choices=("detect",), default="detect")
     gen = subs.add_parser(
         "generate", help="Convert a source skill or prepare a semantic generation request"
     )
@@ -55,6 +60,7 @@ def parser() -> argparse.ArgumentParser:
     doctor = subs.add_parser(
         "doctor", help="Check managed files and local integration configuration"
     )
+    doctor.add_argument("host", nargs="?", choices=tuple(host_registry.REGISTRY))
     doctor.add_argument(
         "--mcp", action="store_true", help="Also perform a real local MCP handshake"
     )
@@ -64,10 +70,33 @@ def parser() -> argparse.ArgumentParser:
     subs.add_parser("serve", help="Start a project-scoped STDIO MCP server")
     for command in ("connect", "disconnect"):
         desktop = subs.add_parser(command, help=f"{command.title()} this project to Claude Desktop")
-        desktop.add_argument("host", choices=("claude-desktop",))
+        desktop.add_argument("host", choices=tuple(host_registry.REGISTRY))
         desktop.add_argument("--config", type=Path, help="Explicit desktop config path")
+    task = subs.add_parser(
+        "task", help="Evidence-backed task lifecycle without a custom Python agent"
+    )
+    tasks = task.add_subparsers(dest="operation", required=True)
+    start = tasks.add_parser("start")
+    start.add_argument("--goal", required=True)
+    start.add_argument("--owner", required=True)
+    start.add_argument("--steps", type=Path, required=True)
+    start.add_argument("--id")
+    checkpoint = tasks.add_parser("checkpoint")
+    complete = tasks.add_parser("complete")
+    for child in (checkpoint, complete):
+        child.add_argument("run_id")
+        child.add_argument("--owner", required=True)
+        child.add_argument("--revision", type=int, required=True)
+    checkpoint.add_argument("--step", required=True)
+    checkpoint.add_argument("--summary", required=True)
+    checkpoint.add_argument("--evidence", nargs="+", required=True)
+    checkpoint.add_argument("--resource", action="append", default=[])
+    checkpoint.add_argument("--revalidation-reason", default="")
     run = subs.add_parser("run", help="Operate a durable run")
     r = run.add_subparsers(dest="operation", required=True)
+    find = r.add_parser("find")
+    find.add_argument("--goal")
+    find.add_argument("--limit", type=int, default=20)
     open_p = r.add_parser("open")
     open_p.add_argument("name")
     open_p.add_argument("--owner", required=True)
@@ -117,11 +146,22 @@ def dispatch(args) -> dict | list | None:
         return read_json(within(project, path)) if path else None
 
     if args.command == "init":
-        return hosts.install(project, args.host, mcp=args.mcp)
+        return host_registry.initialize(project, args.host, args.mcp)
+    if args.command == "hosts":
+        return host_registry.detect(project)
     if args.command in ("connect", "disconnect"):
-        from .desktop import connection
+        if args.host == "claude-desktop":
+            from .desktop import connection
 
-        return connection(project, config=args.config, remove=args.command == "disconnect")
+            return connection(project, config=args.config, remove=args.command == "disconnect")
+        if args.config is not None:
+            raise ValidationError("--config is only supported by claude-desktop")
+        adapter = host_registry.get(args.host)
+        return (
+            adapter.uninstall(project)
+            if args.command == "disconnect"
+            else adapter.install(project, mcp=True)
+        )
     if args.command == "generate":
         if args.prepare:
             return compiler.prepare(project, args.source, args.name)
@@ -150,7 +190,9 @@ def dispatch(args) -> dict | list | None:
         bundle = compiler.load_bundle(project, args.name)
         return {"valid": True, "name": args.name, **bundle["generation"]}
     if args.command == "doctor":
-        result = hosts.doctor(project)
+        result = (
+            host_registry.get(args.host).doctor(project) if args.host else hosts.doctor(project)
+        )
         if args.mcp:
             try:
                 from .mcp_server import smoke_test
@@ -188,8 +230,25 @@ def dispatch(args) -> dict | list | None:
     if args.command == "status":
         with service.store() as store:
             return store.list_runs()
+    if args.command == "task":
+        if args.operation == "start":
+            return service.start_task(args.goal, args.owner, read(args.steps), args.id)
+        if args.operation == "checkpoint":
+            return service.checkpoint_task(
+                args.run_id,
+                args.owner,
+                args.revision,
+                args.step,
+                args.summary,
+                args.evidence,
+                args.resource,
+                args.revalidation_reason,
+            )
+        return service.complete_task(args.run_id, args.owner, args.revision)
     if args.command == "run":
         op = args.operation
+        if op == "find":
+            return service.find_runs(args.goal, args.limit)
         if op == "open":
             return service.open_run(args.name, args.owner, args.id, read(args.observation))
         if op == "context":
@@ -198,7 +257,7 @@ def dispatch(args) -> dict | list | None:
             return service.handoff(args.run_id, args.owner, args.revision, args.to)
         with service.store() as store:
             if op == "update":
-                return store.update(
+                return service.update_run(
                     args.run_id,
                     args.owner,
                     args.revision,

@@ -11,7 +11,7 @@ skillstate validate qa-state
 skillstate doctor --mcp
 ```
 
-Omit `--mcp` for CLI-only host usage. Omit host flags to install all three project adapters. `init` remains project-local; no hooks are installed.
+With explicit host flags, omit `--mcp` for CLI-only usage. With no host flags, `init` selects detected project hosts and enables MCP if its optional dependency is installed; `--no-mcp` explicitly selects CLI-only use. When no project host is detected, the legacy three-adapter fallback remains available. `init` remains project-local; no hooks are installed.
 
 ### Claude Desktop Chat connection
 
@@ -136,3 +136,48 @@ skillstate uninstall
 ```
 
 Artifact paths must be within the project. Reads allow up to 8,000 characters. `doctor --mcp` negotiates a real local STDIO connection and calls a status tool; it does not certify the IDE's skill discovery. `uninstall` removes only unmodified managed skill files/config entries and retains all state/artifacts.
+
+## Task lifecycle and host discovery (0.2)
+
+```text
+skillstate hosts detect
+skillstate init
+skillstate init --host codex --no-mcp
+skillstate doctor codex
+skillstate connect claude-code
+skillstate disconnect claude-code
+```
+
+No-flag init selects detected project hosts, or the historical three offline
+project templates if detection finds none. It enables MCP only if the extra is
+installed. Explicit host selection retains explicit `--mcp` opt-in. Desktop
+remains a separate app-wide connection. JSON output and existing flags remain
+supported; detection does not prove login, model availability or tool permission.
+
+For a normal task without a pre-existing skill, create `plan.json` as an array
+such as `["inspect", "implement", "verify"]`. The host normally handles these
+operations through the installed lifecycle skill:
+
+```text
+skillstate run find --goal "Implement feature"
+skillstate task start --goal "Implement feature" --owner codex --steps plan.json
+skillstate run context RUN_ID
+skillstate artifact put actual-test-output.txt
+skillstate task checkpoint RUN_ID --owner codex --revision N --step inspect --summary "Inspected architecture" --evidence ARTIFACT_ID --resource README.md
+skillstate task complete RUN_ID --owner codex --revision CURRENT_REVISION
+```
+
+Record every required milestone before completion. `--resource` can be repeated;
+`--evidence` accepts one or more existing artifact IDs. Repeating a completed step
+requires `--revalidation-reason "Source changed; reran verification"`. Its prior
+record remains in the audit history, while state keeps the latest evidence.
+
+Task startup uses a deterministic goal-based ID and checks the full goal/plan
+before reusing it. Another owner's run requires explicit handoff. A completed run
+is returned as completed, never reset; supply `--id NEW_ID` for an intentionally
+new task. `run find` returns bounded recent summaries (up to 100 recent runs),
+not automatic semantic matching. Explicit run IDs remain available for older runs.
+
+Existing semantic `run open` and `run update --done` retain their contracts.
+Task-profile completion through CLI/MCP must use `task complete`; it adds evidence
+and freshness checks without imposing a universal schema on existing skills.

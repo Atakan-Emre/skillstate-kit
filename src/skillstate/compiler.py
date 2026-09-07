@@ -136,6 +136,12 @@ def scan(project: Path, source: str | Path = ".") -> dict:
             text = raw.decode("utf-8-sig")
         except UnicodeError as exc:
             raise ValidationError(f"Source must be UTF-8: {relative}") from exc
+        if path.name in ("AGENTS.md", "CLAUDE.md"):
+            text = re.sub(
+                r"<!-- skillstate:begin -->.*?<!-- skillstate:end -->", "", text, flags=re.DOTALL
+            )
+            if not text.strip():
+                continue
         if "skillstate_generated: true" in text[:2000]:
             continue
         symbols = []

@@ -1,0 +1,409 @@
+{
+  "baseline": {
+    "correctness": {
+      "passed": true,
+      "checks": 29,
+      "failures": [],
+      "repository_tests_passed": true
+    },
+    "tool_calls": 27,
+    "repository_search_commands": 13,
+    "file_read_commands": 12,
+    "repeated_exact_tool_calls": 4,
+    "repeated_exact_file_read_commands": 1,
+    "tokens": {
+      "input_tokens": 505477,
+      "cached_input_tokens": 455168,
+      "output_tokens": 6514,
+      "total_tokens": 511991
+    },
+    "wall_seconds": 373.00099999999657,
+    "cost": {
+      "status": "unavailable",
+      "reason": "pricing not explicitly configured"
+    },
+    "model_calls": {
+      "status": "unavailable"
+    },
+    "sessions": 4,
+    "prompt_bytes": [
+      1799,
+      1799,
+      1799,
+      1799
+    ],
+    "mcp_context_response_bytes": []
+  },
+  "skillstate": {
+    "correctness": {
+      "passed": true,
+      "checks": 29,
+      "failures": [],
+      "repository_tests_passed": true
+    },
+    "tool_calls": 76,
+    "repository_search_commands": 10,
+    "file_read_commands": 18,
+    "repeated_exact_tool_calls": 15,
+    "repeated_exact_file_read_commands": 3,
+    "tokens": {
+      "input_tokens": 1027038,
+      "cached_input_tokens": 896512,
+      "output_tokens": 10285,
+      "total_tokens": 1037323
+    },
+    "wall_seconds": 683.3130000000019,
+    "cost": {
+      "status": "unavailable",
+      "reason": "pricing not explicitly configured"
+    },
+    "model_calls": {
+      "status": "unavailable"
+    },
+    "sessions": 4,
+    "prompt_bytes": [
+      1799,
+      1799,
+      1799,
+      1799
+    ],
+    "mcp_context_response_bytes": [
+      11599,
+      13003,
+      14308
+    ],
+    "run_id": "task-ff4b43cb3903507cae473b03",
+    "revisions": [
+      2,
+      4,
+      6,
+      15
+    ],
+    "canonical_context_bytes": [
+      4912,
+      6603,
+      8414,
+      11122
+    ],
+    "revalidated_completed_milestones": 6,
+    "revalidation_reason": "Expected implementation changes and newline normalization invalidated recorded resource fingerprints; the host revalidated with an explicit reason."
+  },
+  "correctness": {
+    "independent_checks_per_mode": 29,
+    "both_passed": true
+  },
+  "repeated_work": {
+    "measurement": "Exact call/read-command repetition; necessary validation and avoidable replay are not automatically distinguishable."
+  },
+  "context": {
+    "measurement": "prompt and MCP response bytes only; native transcript is not controlled"
+  },
+  "tokens": {
+    "measurement": "Actual Codex CLI turn.completed usage; includes native host overhead and cached input"
+  },
+  "latency": {
+    "measurement": "Sum of host session wall times, including host/MCP startup"
+  },
+  "cost": {
+    "measurement": "Unavailable unless explicit pricing provided"
+  },
+  "scope": "One paired deterministic coding task. Planned fresh-session boundaries after stages 2/4/6; not forced mid-tool crash.",
+  "provenance": {
+    "date": "2026-09-07",
+    "package": "skillstate-kit 0.2.0 development checkout",
+    "platform": "Windows",
+    "host": "Codex CLI default configured model; no model override",
+    "model_identity": "not recorded in the collected turn.completed usage",
+    "ordering": "four baseline sessions, then four integrated sessions",
+    "trials": 1,
+    "pricing": "not configured",
+    "fixture": "examples/coding_agent/fixture",
+    "task": "examples/coding_agent/TASK.md",
+    "host_version": "codex-cli 0.153.4"
+  },
+  "per_session": {
+    "baseline": [
+      {
+        "wall_seconds": 70.98500000000058,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 5,
+        "repository_search_commands": 3,
+        "file_read_commands": 2,
+        "provider_usage": [
+          {
+            "input_tokens": 97189,
+            "cached_input_tokens": 90624,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1133,
+            "reasoning_output_tokens": 10
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [],
+        "command_errors": 1,
+        "exit_code": 0,
+        "mode": "baseline",
+        "boundary": 2
+      },
+      {
+        "wall_seconds": 110.42199999999866,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 6,
+        "repository_search_commands": 4,
+        "file_read_commands": 3,
+        "provider_usage": [
+          {
+            "input_tokens": 100849,
+            "cached_input_tokens": 86912,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2472,
+            "reasoning_output_tokens": 64
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [],
+        "command_errors": 1,
+        "exit_code": 0,
+        "mode": "baseline",
+        "boundary": 4
+      },
+      {
+        "wall_seconds": 93.48399999999674,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 8,
+        "repository_search_commands": 3,
+        "file_read_commands": 3,
+        "provider_usage": [
+          {
+            "input_tokens": 162977,
+            "cached_input_tokens": 147584,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1373,
+            "reasoning_output_tokens": 76
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [],
+        "command_errors": 1,
+        "exit_code": 0,
+        "mode": "baseline",
+        "boundary": 6
+      },
+      {
+        "wall_seconds": 98.11000000000058,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 8,
+        "repository_search_commands": 3,
+        "file_read_commands": 4,
+        "provider_usage": [
+          {
+            "input_tokens": 144462,
+            "cached_input_tokens": 130048,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1536,
+            "reasoning_output_tokens": 73
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [],
+        "command_errors": 1,
+        "exit_code": 0,
+        "mode": "baseline",
+        "boundary": 8
+      }
+    ],
+    "skillstate": [
+      {
+        "wall_seconds": 131.29699999999866,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 10,
+        "repository_search_commands": 3,
+        "file_read_commands": 4,
+        "provider_usage": [
+          {
+            "input_tokens": 172918,
+            "cached_input_tokens": 148352,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 2047,
+            "reasoning_output_tokens": 15
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [],
+        "command_errors": 1,
+        "exit_code": 0,
+        "mode": "skillstate",
+        "boundary": 2,
+        "run_count": 1,
+        "run_id": "task-ff4b43cb3903507cae473b03",
+        "revision": 2,
+        "completed_steps": [
+          "inspect",
+          "plan"
+        ],
+        "status": "ready",
+        "canonical_context_bytes": 4912
+      },
+      {
+        "wall_seconds": 177.40600000000268,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 13,
+        "repository_search_commands": 2,
+        "file_read_commands": 4,
+        "provider_usage": [
+          {
+            "input_tokens": 213430,
+            "cached_input_tokens": 175616,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3210,
+            "reasoning_output_tokens": 31
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [],
+        "command_errors": 1,
+        "exit_code": 0,
+        "mode": "skillstate",
+        "boundary": 4,
+        "run_count": 1,
+        "run_id": "task-ff4b43cb3903507cae473b03",
+        "revision": 4,
+        "completed_steps": [
+          "inspect",
+          "plan",
+          "implement",
+          "add-tests"
+        ],
+        "status": "ready",
+        "canonical_context_bytes": 6603
+      },
+      {
+        "wall_seconds": 132.29699999999866,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 18,
+        "repository_search_commands": 3,
+        "file_read_commands": 4,
+        "provider_usage": [
+          {
+            "input_tokens": 279229,
+            "cached_input_tokens": 239488,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 1627,
+            "reasoning_output_tokens": 39
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [
+          11599,
+          13003,
+          14308
+        ],
+        "command_errors": 0,
+        "exit_code": 0,
+        "mode": "skillstate",
+        "boundary": 6,
+        "run_count": 1,
+        "run_id": "task-ff4b43cb3903507cae473b03",
+        "revision": 6,
+        "completed_steps": [
+          "inspect",
+          "plan",
+          "implement",
+          "add-tests",
+          "run-tests",
+          "resolve-failures"
+        ],
+        "status": "ready",
+        "canonical_context_bytes": 8414
+      },
+      {
+        "wall_seconds": 242.31300000000192,
+        "host_sessions": 1,
+        "model_calls": {
+          "status": "unavailable",
+          "reason": "CLI exposes session usage, not individual model request count"
+        },
+        "tool_calls": 35,
+        "repository_search_commands": 2,
+        "file_read_commands": 6,
+        "provider_usage": [
+          {
+            "input_tokens": 361461,
+            "cached_input_tokens": 333056,
+            "cache_write_input_tokens": 0,
+            "output_tokens": 3401,
+            "reasoning_output_tokens": 414
+          }
+        ],
+        "prompt_bytes": 1799,
+        "mcp_context_response_bytes": [],
+        "command_errors": 0,
+        "exit_code": 0,
+        "mode": "skillstate",
+        "boundary": 8,
+        "run_count": 1,
+        "run_id": "task-ff4b43cb3903507cae473b03",
+        "revision": 15,
+        "completed_steps": [
+          "inspect",
+          "plan",
+          "implement",
+          "add-tests",
+          "run-tests",
+          "resolve-failures",
+          "style-check",
+          "final-validation"
+        ],
+        "status": "completed",
+        "canonical_context_bytes": 11122
+      }
+    ]
+  },
+  "evidence_hashes": {
+    "baseline/2.events.jsonl": "0ba33f63dd338dac95fc051459872422aa2d9b923c4b6e0998bdbc0b4b5b74a8",
+    "baseline/4.events.jsonl": "0f60f1718b6a520acbf25221b219df9a9b7f54379047f0ac43c1e08d7b4ce08b",
+    "baseline/6.events.jsonl": "6280cc11134a763c2b2ff16ab047cd9b9c5da9deca662cbb87adf0b57680ccc9",
+    "baseline/8.events.jsonl": "43f725e3192d50d0bcb646ef49b8a9884b4d25a19dec45beb4e93887cafe8324",
+    "skillstate/2.events.jsonl": "10b7e5640bea7c291aeff112cd409badc5180c1697136564a5a16e3482b13bbf",
+    "skillstate/4.events.jsonl": "a08d815c321328c3db74782278a264a903f390da7feaffb1ad4afb9ab0644f07",
+    "skillstate/6.events.jsonl": "20194c90af1ab4153e9fe6db590c108ba5936ce090003a495c5be832874f4bfe",
+    "skillstate/8.events.jsonl": "e0d012e1a6175a564b4d295ccd056891104abf55a19dc6acfcf4e18293b5ab72"
+  },
+  "limitations": [
+    "Single paired trial with no randomized order or confidence interval.",
+    "Fresh sessions are planned stops, not mid-tool crashes.",
+    "Host versions/model defaults, cache state, MCP startup and inherited repository config affect results.",
+    "Search/read counts are command-pattern proxies; exact repeats include legitimate validation and state queries.",
+    "Checkpoint preservation does not certify absence of every external tool replay.",
+    "Raw host logs remain local because they may contain local paths or host metadata. Hashes identify those logs but are not a substitute for public traces.",
+    "Claude Code live path and new Codex-to-Claude Code handoff were not executed."
+  ]
+}

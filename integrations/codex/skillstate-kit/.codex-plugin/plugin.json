@@ -1,0 +1,25 @@
+{
+  "name": "skillstate-kit",
+  "version": "0.2.0",
+  "description": "Portable execution state, evidence-backed progress and explicit task continuation.",
+  "author": {
+    "name": "Atakan Emre"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/Atakan-Emre/skillstate-kit",
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "SkillState Kit",
+    "shortDescription": "Validated execution state for agent tasks.",
+    "longDescription": "Preserve evidence-backed task progress and continue from explicit checkpoints using the canonical Python CLI and MCP server.",
+    "developerName": "Atakan Emre",
+    "category": "Productivity",
+    "capabilities": [
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use skillstate-task to continue this project from its current checkpoint."
+    ]
+  }
+}

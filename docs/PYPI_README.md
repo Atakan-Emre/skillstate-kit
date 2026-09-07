@@ -1,24 +1,40 @@
 # skillstate-kit
 
-**Portable, validated execution state for agent skills.**
+**A portable, validated execution-state layer for long-running AI agents.**
 
-Convert an existing `SKILL.md` into a state-backed skill, retain durable checkpoints, and integrate the same execution engine into a Python application.
+Maintain task progress, observations, artifacts and operation state outside conversational history. Use your existing coding agent through CLI/MCP and project integrations, or embed the same canonical engine in Python. Semantic generation from existing skills remains supported. No custom Python agent is required for host integration.
 
-Python 3.11+ · MIT license · Initial alpha
+Python 3.11+ · MIT license · Alpha
 
 ## Install
 
 ```bash
-python -m pip install "skillstate-kit[mcp,http]"
-skillstate demo
+python -m pip install "skillstate-kit[mcp]"
+skillstate init
+skillstate doctor --mcp
 ```
 
-The core package requires no model account. The demo uses an explicitly scripted model and local tools; it is not a benchmark of real-model performance.
+Run setup in your project. Host detection installs the applicable project lifecycle and generator skills; unrelated instructions/configuration are preserved. After reloading discovery, use your agent normally. The integration guides it to inspect compatible runs, preserve completed work, record evidence and validate completion.
+
+The base package also supports `pip install skillstate-kit` and `skillstate init` through CLI instructions. MCP is optional. The core requires no model account; your host supplies its model. `skillstate demo` is an explicitly scripted offline example.
 
 Optional extras:
 
 - `mcp`: a project-scoped STDIO MCP server and connection diagnostics.
 - `http`: a stateless adapter for a configured JSON-compatible chat-completions endpoint.
+
+## Task lifecycle
+
+The optional task profile provides `task_start`, `task_checkpoint` and `task_complete` over CLI/MCP. Milestones reference artifacts, completion time and resource fingerprints; repeated milestones require an explicit revalidation reason. Completion validates required steps, evidence integrity, blockers and freshness. Agent-reported evidence does not independently prove business truth. Existing semantic state schemas and run APIs remain supported.
+
+`skillstate hosts detect` lists discovery evidence. `skillstate init --host codex --mcp` or `--host claude-code --mcp` selects a project integration. `skillstate doctor codex` checks that integration. `skillstate disconnect codex` reverses its owned setup while retaining state.
+
+Execution-state optimization does not remove a host's native transcript. Token, latency and cost improvements must be measured independently; smaller application context is not proof of provider savings.
+
+A real paired Codex coding trial passed 29 independent checks in both modes and
+preserved the integrated run across four fresh sessions. It used more tokens and
+wall time with SkillState on that small task. See the
+[measurement report](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/benchmarks/coding-agent.md).
 
 ## Use an existing skill
 

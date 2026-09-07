@@ -44,6 +44,37 @@ def create_server(project: Path):
         return result
 
     @server.tool()
+    def run_find(goal: str | None = None, limit: int = 20) -> list[dict]:
+        """Find bounded goal/active-step summaries; inspect before choosing an existing run."""
+        return service.find_runs(goal, limit)
+
+    @server.tool()
+    def task_start(goal: str, owner: str, steps: list[str], run_id: str | None = None) -> dict:
+        """Start or resume an identical evidence-backed task; never reset existing progress."""
+        return service.start_task(goal, owner, steps, run_id)
+
+    @server.tool()
+    def task_checkpoint(
+        run_id: str,
+        owner: str,
+        revision: int,
+        step: str,
+        summary: str,
+        evidence: list[str],
+        resources: list[str],
+        revalidation_reason: str = "",
+    ) -> dict:
+        """Save actual milestone evidence and resource fingerprints; repeating a step needs a reason."""
+        return service.checkpoint_task(
+            run_id, owner, revision, step, summary, evidence, resources, revalidation_reason
+        )
+
+    @server.tool()
+    def task_complete(run_id: str, owner: str, revision: int) -> dict:
+        """Check required milestone evidence and freshness before marking a task complete."""
+        return service.complete_task(run_id, owner, revision)
+
+    @server.tool()
     def run_open(name: str, owner: str, observation: dict, run_id: str | None = None) -> dict:
         """Open a new run; duplicate IDs are rejected instead of resetting existing work."""
         return service.open_run(name, owner, run_id, observation)
@@ -63,8 +94,7 @@ def create_server(project: Path):
         done: bool = False,
     ) -> dict:
         """Apply validated agent-reported facts without executing external actions."""
-        with service.store() as store:
-            return store.update(run_id, owner, revision, patch, observation, done=done)
+        return service.update_run(run_id, owner, revision, patch, observation, done=done)
 
     @server.tool()
     def run_reserve(

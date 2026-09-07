@@ -4,7 +4,7 @@
 
 [PyPI paketi](https://pypi.org/project/skillstate-kit/) · [Çalışan Python örneği](../README.md#python-integration) · [Kabul testleri](host-acceptance.md)
 
-skillstate-kit, mevcut agent skill'lerini kalıcı ve doğrulanan görev durumuyla kullanmanızı sağlar. MIT lisansıyla açık kaynak olarak yayımlanır ve PyPI üzerinden kurulabilir. Sürüm alpha durumundadır.
+skillstate-kit, AI agent'lar için taşınabilir bir görev yürütme durumu katmanıdır. İlerleme, kanıtlar ve işlem durumu konuşma geçmişinden ayrı saklanır. Python, CLI ve MCP aynı çekirdeği kullanır; özel bir Python agent yazmanız gerekmez. MIT lisansıyla açık kaynak olarak yayımlanır. Sürüm alpha durumundadır.
 
 **Dış proje doğrulaması:** Hugging Face smolagents'ın mevcut SQL agent'ı, 1.000 sentetik kayıt üzerindeki beş kontrolde entegrasyon öncesi ve sonrası aynı doğru sonuçları üretti. Skillstate ile çalışan süreç zorla kapatıldıktan sonra yeni süreç kalan iki sorguyla tamamlandı; bitmiş sorgular tekrarlanmadı. [Deneyin kapsamı, sonuçları ve tekrar çalıştırma adımları](smolagents-acceptance.md).
 
@@ -13,20 +13,23 @@ skillstate-kit, mevcut agent skill'lerini kalıcı ve doğrulanan görev durumuy
 Python 3.11 veya üzeri bir ortamda:
 
 ```text
-python -m pip install "skillstate-kit[mcp,http]"
-skillstate demo
+python -m pip install "skillstate-kit[mcp]"
 ```
 
 Ardından kullanacağınız projenin klasöründe:
 
 ```text
-skillstate init --host codex --host claude-code --host antigravity --mcp
-skillstate generate skills/qa/SKILL.md --name qa-state --install
-skillstate validate qa-state
+skillstate init
 skillstate doctor --mcp
 ```
 
-`skills/qa/SKILL.md` yerine kendi dosyanızı kullanın. Yalnızca kullandığınız host'ları seçebilirsiniz. `--mcp` opsiyoneldir; temel kullanım CLI üzerinden çalışır. MCP ayarları bu makineye ait Python/proje yollarını içerir.
+0.2.0 ile `init`, algılanan proje ortamlarını seçer ve MCP kuruluysa yapılandırır. `skillstate hosts detect` seçim gerekçelerini gösterir. Yalnızca `pip install skillstate-kit` de yeterlidir: temel paket CLI üzerinden çalışır. Belirli bir ortam için `skillstate init --host codex --mcp` kullanabilirsiniz. MCP ayarları bu makineye ait Python/proje yollarını içerir.
+
+Agent oturumunu yeniledikten sonra normal görevinizi verin: “Bu projeye JWT doğrulaması ekle ve testlerini çalıştır.” Kurulan yönergeler agent'ı mevcut görevi bulmaya, uygun kaydı sürdürmeye ve kanıtlı adımlar kaydetmeye yönlendirir. Host'un yönergeleri izlemesi gerekir; paket her araç çağrısını zorla denetlemez.
+
+`skillstate run find` ile kayıtları, `skillstate run context RUN_ID` ile güncel durumu görebilirsiniz. Tamamlanan adımı yeniden kaydetmek açık bir yeniden doğrulama gerekçesi ister. Kaynak dosyası değişirse yalnızca o dosyaya bağlı kanıtlar eski olarak işaretlenir. [Durum ve doğrulama sözleşmesi](execution-state.md).
+
+**Ölçüm:** Yeni [kodlama deneyi](benchmarks/coding-agent.md) gerçek token ve süreyi ayrı raporlar. Kalıcı durumun çalışması otomatik maliyet tasarrufu anlamına gelmez; host'un konuşma geçmişini bu paket silemez.
 
 ## Otomatik üretim
 
