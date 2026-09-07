@@ -2,6 +2,15 @@
 
 Tests validate contracts, not an absence of all possible defects. A successful generation reports structural checks; it does not invent live execution evidence.
 
+## Predictable installation (0.2.2)
+
+The [0.2.2 release workflow](https://github.com/Atakan-Emre/skillstate-kit/actions/runs/34132115456)
+passed **153 tests in each of six OS/Python jobs**, with **89.11–89.24%** coverage.
+Host-selection and shared-skill diagnostic regressions are covered. README/PyPI
+description and plugin consistency checks, dependency auditing, clean installation
+and downloaded PyPI verification passed. See [installation](integrations.md) and
+[release notes](releases/0.2.2.md).
+
 ## Task integrity hardening (0.2.1)
 
 The [0.2.1 release workflow](https://github.com/Atakan-Emre/skillstate-kit/actions/runs/34120659712)
