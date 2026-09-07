@@ -6,6 +6,8 @@
 
 skillstate-kit, mevcut agent skill'lerini kalıcı ve doğrulanan görev durumuyla kullanmanızı sağlar. Sürüm alpha durumundadır; geliştirme deposu private kalırken paket PyPI üzerinden dağıtılır.
 
+**Dış proje doğrulaması:** Hugging Face smolagents'ın mevcut SQL agent'ı, 1.000 sentetik kayıt üzerindeki beş kontrolde entegrasyon öncesi ve sonrası aynı doğru sonuçları üretti. Skillstate ile çalışan süreç zorla kapatıldıktan sonra yeni süreç kalan iki sorguyla tamamlandı; bitmiş sorgular tekrarlanmadı. [Deneyin kapsamı, sonuçları ve tekrar çalıştırma adımları](smolagents-acceptance.md).
+
 ## Kurulum
 
 Python 3.11 veya üzeri bir ortamda:

@@ -25,6 +25,12 @@ Keep the procedure in your `SKILL.md`. Generate a bounded state definition, save
 
 **Available on [PyPI](https://pypi.org/project/skillstate-kit/).** Version `0.1.2` is an alpha. The package is public; the development repository is private. Installation does not require repository access.
 
+**External-project validation:** the existing Hugging Face smolagents SQL agent
+produced the same five correct results on 1,000 synthetic receipts before and
+after integration. The managed run resumed in a new process after an injected
+interruption, without repeating completed queries.
+[Read the experiment and its scope](docs/smolagents-acceptance.md).
+
 ## Why skillstate-kit?
 
 | Capability | What it gives you |

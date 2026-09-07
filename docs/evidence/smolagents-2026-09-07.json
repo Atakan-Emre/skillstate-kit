@@ -1,0 +1,92 @@
+{
+  "date": "2026-09-07",
+  "upstream": {
+    "full_name": "huggingface/smolagents",
+    "html_url": "https://github.com/huggingface/smolagents",
+    "stargazers_count": 29207,
+    "forks_count": 2935,
+    "updated_at": "2026-09-07T06:33:12Z",
+    "commit": "30bb1161095dbae2271e6bc3cc4c219cc3897a57",
+    "python_source_files": 18,
+    "python_source_lines": 12774
+  },
+  "skillstate_version": "0.1.2 (public PyPI install)",
+  "model": "Authenticated installed Codex CLI default; fresh ephemeral completion per call",
+  "dataset": {
+    "kind": "synthetic receipts",
+    "rows": 1000,
+    "sha256": "bc3854e7fb24fafc19918b0f00459f2af856fa82c1a68fd2c7ad0a0dbed76c52"
+  },
+  "expected_and_observed_report": {
+    "receipt_count": 1000,
+    "gross_total": 127955.0,
+    "tip_total": 15901.78,
+    "top_customer": "customer-03",
+    "low_tip_count": 467
+  },
+  "baseline": {
+    "passed": true,
+    "tool_calls": 5
+  },
+  "managed": {
+    "passed": true,
+    "tool_calls": 5,
+    "before_restart": 3,
+    "after_restart": 2,
+    "checkpoint_revision": 6,
+    "final_revision": 11,
+    "events": 12,
+    "repeated_queries": 0,
+    "pending_operation": null
+  },
+  "generation": {
+    "source_hash": "88bdfa918427cc0e5025aa228073f34c306b56260181feb2efad3c86355d4a5a",
+    "bundle_hash": "7c2ce93adb9a469191a4e91bcaf69f67d33b73101e1244f2f6897ce408b9c7d2",
+    "mode": "real-model semantic proposal"
+  },
+  "application_payload_measurements": {
+    "baseline": {
+      "model_calls": 6,
+      "context_bytes": [
+        10199,
+        11103,
+        12051,
+        12976,
+        14103,
+        15139
+      ]
+    },
+    "generate": {
+      "model_calls": 1,
+      "context_bytes": [
+        5982
+      ]
+    },
+    "managed-start": {
+      "model_calls": 3,
+      "context_bytes": [
+        4569,
+        3775,
+        3797
+      ]
+    },
+    "managed-resume": {
+      "model_calls": 3,
+      "context_bytes": [
+        3819,
+        3844,
+        3861
+      ]
+    }
+  },
+  "limits": [
+    "One task, one dataset, one successful paired run.",
+    "Existing smolagents SQL example, not every feature of its repository.",
+    "Synthetic data and read-only SQL, not production or mutating API validation.",
+    "Manual tool/model adapter and task specification; no automatic rewrite of arbitrary agent code.",
+    "Original upstream in-memory SQLite setup required a shared-connection compatibility fix.",
+    "Crash injected after a committed operation, not during an external side effect.",
+    "Context bytes measure application JSON payload only, not billed tokens or total provider context.",
+    "Baseline uses CodeAgent Python actions; managed mode uses registered JSON tool actions."
+  ]
+}
