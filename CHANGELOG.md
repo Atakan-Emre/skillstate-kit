@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.1 — task integrity hardening
+
+- Prevent generic task updates and operation reservations from replacing checkpoint-owned progress; blocker updates remain supported. CLI and MCP share the same service guard.
+- Reject completion with empty evidence, duplicate/out-of-order milestones, inconsistent resource fingerprints or artifact indexes. Existing semantic patch APIs and SQLite v1 remain supported.
+- Add fresh-runtime observation isolation and adversarial task-state regression coverage.
+- Clarify milestone resource scoping and avoid unnecessary context rereads in lifecycle instructions; no new performance result is claimed.
+- Update development tooling with known advisory fixes and add locked-dependency auditing to release CI.
+- Rewrite user-facing package documentation and document research alignment. Internal planning documents are excluded from source distributions.
+
 ## 0.2.0 — portable task execution state
 
 - Add an optional evidence-backed task profile with ordered milestones, explicit revalidation, per-resource freshness checks and validated completion.

@@ -1,147 +1,220 @@
 # skillstate-kit
 
-**A portable, validated execution-state layer for long-running AI agents.**
+**Portable execution state for AI agents.**
 
-Maintain task progress, observations, artifacts and operation state outside conversational history. Use your existing coding agent through CLI/MCP and project integrations, or embed the same canonical engine in Python. Semantic generation from existing skills remains supported. No custom Python agent is required for host integration.
+Keep task progress, observations, evidence and operation outcomes outside conversational history. Use the same Python engine through the SDK, CLI or MCP, with project integrations for Codex and Claude.
 
-Python 3.11+ · MIT license · Alpha
+[PyPI](https://pypi.org/project/skillstate-kit/) · [Documentation](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/integrations.md) · [Research alignment](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/paper-alignment.md) · [Validation](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/validation.md)
 
-## Install
+## Quick start
+
+Requires Python 3.11 or newer. Run inside the project you want to integrate:
 
 ```bash
-python -m pip install "skillstate-kit[mcp]"
+python -m pip install -U "skillstate-kit[mcp]"
 skillstate init
 skillstate doctor --mcp
 ```
 
-Run setup in your project. Host detection installs the applicable project lifecycle and generator skills; unrelated instructions/configuration are preserved. After reloading discovery, use your agent normally. The integration guides it to inspect compatible runs, preserve completed work, record evidence and validate completion.
+Restart or reload your agent's project discovery, then give it a normal task:
 
-The base package also supports `pip install skillstate-kit` and `skillstate init` through CLI instructions. MCP is optional. The core requires no model account; your host supplies its model. `skillstate demo` is an explicitly scripted offline example.
+> Implement duration parsing and verify it with regression tests.
 
-Optional extras:
+Installed instructions guide the agent to find the intended run, continue from current state, record evidence and validate completion. Host support and instruction-following remain necessary. No custom Python agent is required for this integration.
 
-- `mcp`: a project-scoped STDIO MCP server and connection diagnostics.
-- `http`: a stateless adapter for a configured JSON-compatible chat-completions endpoint.
+The base `pip install skillstate-kit` also supports `skillstate init` using the CLI. MCP is an optional extra; `http` adds a stateless JSON model adapter.
+
+## Choose the state model
+
+| Requirement | Interface |
+|---|---|
+| Track a multi-step coding task | Built-in task profile with evidence-backed milestones |
+| Represent domain facts and procedural rules | Generate a task-specific semantic skill schema |
+| Control every model input and registered tool call | Python `SkillRuntime` with a stateless model callback |
+
+The task profile records the goal, active/completed/remaining steps, blockers and artifact references. It does not replace a domain model for inventory, invoices or other business rules.
+
+### Use an existing skill
+
+```bash
+skillstate generate skills/qa/SKILL.md --name qa-state --install
+skillstate validate qa-state
+```
+
+Replace the source path with your existing file. Direct generation preserves instructions and adds tracking state. For domain-specific fields, use the installed `generate-skill-state` skill or the source-bound `--prepare` / `--proposal` workflow. Generated proposals undergo structural and source-integrity checks; generation does not execute or certify the task.
+
+For Python test tracking without an existing skill file:
+
+```bash
+skillstate generate . --profile python-tests --name tests-state --install
+```
+
+See the [generation and CLI reference](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/cli.md).
 
 ## Task lifecycle
 
-The optional task profile provides `task_start`, `task_checkpoint` and `task_complete` over CLI/MCP. Milestones reference artifacts, completion time and resource fingerprints; repeated milestones require an explicit revalidation reason. Completion validates required steps, evidence integrity, blockers and freshness. Agent-reported evidence does not independently prove business truth. Existing semantic state schemas and run APIs remain supported.
-
-`skillstate hosts detect` lists discovery evidence. `skillstate init --host codex --mcp` or `--host claude-code --mcp` selects a project integration. `skillstate doctor codex` checks that integration. `skillstate disconnect codex` reverses its owned setup while retaining state.
-
-Execution-state optimization does not remove a host's native transcript. Token, latency and cost improvements must be measured independently; smaller application context is not proof of provider savings.
-
-A real paired Codex coding trial passed 29 independent checks in both modes and
-preserved the integrated run across four fresh sessions. It used more tokens and
-wall time with SkillState on that small task. See the
-[measurement report](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/benchmarks/coding-agent.md).
-
-## Use an existing skill
-
-Run these commands in your target project. Replace `skills/qa/SKILL.md` with your existing skill file:
-
-```bash
-skillstate init --host codex --host claude-code --host antigravity --mcp
-skillstate generate skills/qa/SKILL.md --name qa-state --install
-skillstate validate qa-state
-skillstate doctor --mcp
+```text
+Find intended run → Read current state → Execute active work
+                         ↑                       ↓
+                    Continue ← Record verified milestone
+                                      ↓
+                           Validate and complete
 ```
 
-After your host discovers the installed `generate-skill-state` skill, ask it to generate state from an existing skill and install the result. Invoke the generated `qa-state` skill to run the procedure with checkpoints. Generating a definition does not execute the task.
+- `task_start` creates an ordered plan or resumes an identical intended task.
+- `task_checkpoint` records artifact-backed milestones and resource fingerprints.
+- Repeating a completed milestone requires an explicit revalidation reason.
+- `task_complete` checks required steps, evidence integrity, freshness and blockers.
+- Generic task updates can change blockers; they cannot replace milestone progress.
+- Pending or uncertain operations require reconciliation before further work.
 
-`generate` preserves the source procedure and adds bounded progress fields. Domain-specific generation uses the active agent's proposal:
+Inspect progress with `skillstate run find` and `skillstate run context RUN_ID`.
+Use `skillstate run events RUN_ID` for audit history. An intentionally new task
+needs a new run ID; resuming an existing task never requires resetting it.
 
-```bash
-skillstate generate skills/qa/SKILL.md --prepare
-skillstate generate skills/qa/SKILL.md --proposal proposal.json --source-hash HASH_FROM_PREPARE --install
-```
+Evidence validates what was recorded and whether referenced resources changed.
+Applications must still verify business outcomes. Native host tools are not
+universally intercepted or sandboxed by this library.
 
-The preparation response contains source text, its fingerprint and the proposal schema. The agent writes `proposal.json`; the library validates it and refuses stale source fingerprints. Structural validation is not proof that every business rule is correct.
+## Host integrations
 
-You can also supply an explicitly configured endpoint with `--base-url` and `--model`. Terminal commands do not borrow your IDE's model credentials.
+| Host | Project setup |
+|---|---|
+| Codex | `skillstate init --host codex --mcp` |
+| Claude Code | `skillstate init --host claude-code --mcp` |
+| Claude Desktop Chat | `skillstate connect claude-desktop` |
+| Antigravity | `skillstate init --host antigravity --mcp` |
 
-## Claude Desktop Chat
+`skillstate hosts detect` reports discovery evidence. `skillstate doctor codex`
+checks a selected adapter. Claude Desktop uses a separate application-level
+connection and requires a full restart. Keep machine-specific MCP configuration
+local. Detection or a healthy local server does not establish live host acceptance.
 
-Version 0.1.2 adds an explicit local connection, separate from Claude Code:
-
-```console
-skillstate connect claude-desktop
-skillstate doctor --mcp
-```
-
-Fully quit and reopen Claude Desktop, use **Chat**, and approve the tool calls you intend to allow. The installer preserves unrelated settings and uses a separate server name per project. Windows standalone/Microsoft Store and macOS paths are supported; `--config PATH` selects a custom location. If two Windows configs exist, choose explicitly. Disconnect with `skillstate disconnect claude-desktop`; run data remains intact.
-
-Live acceptance evidence: Codex used eight real MCP calls to record a synthetic invoice review and hand it to Claude Desktop. After an initial permission/timeout interruption, Desktop resumed the same run, saved a second-review artifact and completed at revision 4. A separate process verified the stored state, both artifacts and the event history. This representative Codex-to-Claude Desktop Chat success does not establish universal desktop compatibility.
+Installation preserves unrelated configuration and managed instruction blocks.
+`skillstate disconnect HOST` removes owned integration settings while retaining
+state. [Setup, thin plugins and host limitations](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/integrations.md).
 
 ## Python integration
 
-This complete example uses a scripted model. Replace `model` and `record` with your own model and service functions:
+This runnable example uses a **scripted model and a simulated tool**. It requires
+no credentials. Replace the callbacks with your application integrations:
 
 ```python
 import asyncio
+
 from skillstate import Skill, SkillRuntime, SQLiteStore, Tool, ToolResult
 
-skill = Skill(
-    name="record-job",
-    instructions="Record the job, then finish after its result is confirmed.",
-    state_schema={
-        "type": "object",
-        "properties": {"recorded": {"type": "boolean"}},
-        "required": ["recorded"],
-        "additionalProperties": False,
-    },
-    initial_state={"recorded": False},
-)
-
-def model(context):
-    if context["state"]["recorded"]:
-        return {"patch": [], "action": None, "done": True}
-    return {
-        "patch": [{"op": "set", "path": "/recorded", "value": True}],
-        "action": {"name": "record", "arguments": {}},
-        "done": False,
-    }
-
-def record(arguments, operation_id):
-    # For a real API, forward operation_id to its idempotency facility when
-    # supported and inspect the actual response before reporting success.
-    return ToolResult(True, {"recorded": True})
-
 async def main():
-    with SQLiteStore() as store:  # Pass a local file path for durable storage.
-        store.create("job-001", skill, "worker")
-        tool = Tool("record", "Record a job",
-                    {"type": "object", "additionalProperties": False}, record)
-        runtime = SkillRuntime(store, model, [tool],
-                               completion_check=lambda state: state["recorded"])
-        result = await runtime.run("job-001", "worker", max_steps=10)
+    skill = Skill(
+        "record-job",
+        "Record the job; finish after its result is confirmed.",
+        {
+            "type": "object",
+            "properties": {"recorded": {"type": "boolean"}},
+            "required": ["recorded"],
+            "additionalProperties": False,
+        },
+        {"recorded": False},
+    )
+
+    def model(context):
+        if context["state"]["recorded"]:
+            return {"patch": [], "action": None, "done": True}
+        return {
+            "patch": [{"op": "set", "path": "/recorded", "value": True}],
+            "action": {"name": "record", "arguments": {}},
+            "done": False,
+        }
+
+    def record(arguments, operation_id):
+        return ToolResult(True, {"recorded": True, "operation_id": operation_id})
+
+    tool = Tool("record", "Record a job", {"type": "object", "additionalProperties": False}, record)
+    with SQLiteStore() as store:
+        store.create("example", skill, "worker", {"job": "example"})
+        runtime = SkillRuntime(store, model, [tool], completion_check=lambda s: s["recorded"])
+        result = await runtime.run("example", "worker")
         print(result["status"], result["state"])
 
-asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())
 ```
 
-For persistent storage, pass a database path to `SQLiteStore`. Reopen the same database and run ID to resume; creating a duplicate run is rejected.
+Expected output:
 
-## Execution contract
+```text
+completed {'recorded': True}
+```
 
-- Explicit `set`/`delete` patches with JSON Pointer paths, inline JSON Schema and UTF-8 size limits.
-- State and tool arguments validated before a managed tool executes.
-- Persistent operation intent before tool execution; atomic state, result and event commit afterward.
-- Failed tools retain the prior state. Exceptions, timeouts and ambiguous results block replay until reconciliation.
-- Revision checks prevent competing clients from silently overwriting each other.
-- Immutable skill definitions, source drift detection and sequential owner handoff.
-- Large text artifacts kept outside the active context.
+Replace `model(context)` with your synchronous or asynchronous model callback, and `record` with a real tool that checks its result. Forward `operation_id` to the external service's idempotency facility when supported.
 
-Native host skills provide state and checkpoints. They do **not** replace host conversation history or intercept every native tool. Use the managed Python runtime with a stateless model for history-free model inputs.
+The example uses an in-memory store for easy reruns. Use `SQLiteStore("jobs.sqlite3")` for durable storage. Create each run once; resume by reopening that database and calling `runtime.run` with the existing run ID and owner. See the [runnable source](https://github.com/Atakan-Emre/skillstate-kit/blob/main/examples/managed_runtime.py) and [runtime contract](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/architecture.md).
 
-SQLite does not make external APIs transactional. Owner names coordinate local clients; they are not authentication. The library validates reported results but cannot independently prove external business truth. Keep local state private and test recovery behavior for your application.
+### Model decision contract
 
-## Compatibility and documentation
+```json
+{
+  "patch": [{"op": "set", "path": "/recorded", "value": true}],
+  "action": {"name": "record", "arguments": {}},
+  "done": false
+}
+```
 
-Adapters generate project skill files and optional MCP configuration for Codex, Claude Code and Antigravity. They target documented integration surfaces. MCP protocol tests and configuration discovery do not certify every IDE version or live task.
+Finish with `{"patch": [], "action": null, "done": true}`. State updates use explicit `set`/`delete` operations and JSON Pointer paths. Setting `null` does not delete a key. No reasoning-trace field is accepted.
 
-The source distribution includes `docs/cli.md`, `docs/architecture.md`, `docs/compatibility.md`, `docs/validation.md`, `docs/README_TR.md` and runnable examples. Download the source archive from this package's files to read them offline. The development repository currently requires collaborator access.
+
+## Execution guarantees and boundaries
+
+| Concern | Contract |
+|---|---|
+| Invalid decisions | Validate state patches and registered tool arguments before effects |
+| Concurrent writes | Reject stale revisions and wrong owners |
+| Failed or uncertain tools | Preserve the checkpoint; require explicit reconciliation when uncertain |
+| Completed task progress | Use evidence-backed lifecycle calls and explicit revalidation |
+| Application context | Enforce byte budgets; keep audit history outside ordinary model context |
+| Persistence | Shared SQLite store, immutable skill definitions and integrity-checked artifacts |
+
+The managed runtime supplies current instructions, state and latest observation
+plus fixed tool/schema contracts. A stateless model callback is required to avoid
+reintroducing history. Native Codex/Claude integrations retain the host's own
+conversation behavior and do not guarantee lower provider token usage.
+
+Owner IDs coordinate trusted local clients; they are not authentication. Python
+callbacks run with application permissions. SQLite cannot atomically roll back
+remote side effects. [Security boundaries](https://github.com/Atakan-Emre/skillstate-kit/blob/main/SECURITY.md) · [Execution contract](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/execution-state.md).
+
+## Validation and performance
+
+The test suite covers schema rejection, persistence, concurrent revisions,
+uncertain operations, artifact integrity, installer preservation and real MCP
+transport. See [release validation](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/validation.md) for exact tested versions.
+
+Reproducible experiments are documented separately:
+
+- [External smolagents correctness and forced-process continuation](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/smolagents-acceptance.md).
+- [Paired Codex coding experiment: correctness, repeated work, actual tokens and latency](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/benchmarks/coding-agent.md).
+- [Host acceptance and scope](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/host-acceptance.md).
+
+The recorded small coding trial incurred additional token and latency overhead.
+Performance depends on workload and host behavior; universal savings are not claimed.
 
 ## Research
 
-An independent implementation inspired by [SKILL.state: Scalable Long-Horizon Agent Skills](https://arxiv.org/abs/2608.26263). Not affiliated with the paper's authors. The compiler, host adapters and operation journal are engineering extensions; no reproduction of the paper's benchmark scores or token savings is claimed.
+Independent implementation inspired by [SKILL.state: Scalable Long-Horizon Agent Skills](https://arxiv.org/abs/2608.26263), by Sanket Badhe, Priyanka Tiwari and Jonghyun Chung. No affiliation or endorsement is implied.
+
+The [research alignment document](https://github.com/Atakan-Emre/skillstate-kit/blob/main/docs/paper-alignment.md) distinguishes the managed runtime from native-host integration, maps implemented contracts to tests and records intentional differences. Paper benchmark results are not claimed for this package.
+
+## Development
+
+```bash
+python -m pip install uv
+uv sync --locked --extra dev
+uv run ruff check src tests examples scripts
+uv run ruff format --check src tests examples scripts
+uv run pytest --cov=skillstate --cov-fail-under=85
+uv run python -m build
+uv run twine check dist/*
+```
+
+Python/OS tests and clean-package checks run in CI. The package is alpha.
+[MIT license](https://github.com/Atakan-Emre/skillstate-kit/blob/main/LICENSE) · [Contributing](https://github.com/Atakan-Emre/skillstate-kit/blob/main/CONTRIBUTING.md) · [Changelog](https://github.com/Atakan-Emre/skillstate-kit/blob/main/CHANGELOG.md) · [Security reporting](https://github.com/Atakan-Emre/skillstate-kit/blob/main/SECURITY.md).

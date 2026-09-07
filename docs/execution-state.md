@@ -37,6 +37,12 @@ steps/blockers remain, and declared resources/evidence are current. The low-leve
 SQLite SDK remains a coordination primitive; a caller with direct database access
 can bypass application rules. This is not an authentication/security boundary.
 
+Since 0.2.1, `ProjectService.update_run` and `reserve_run` (also used by CLI/MCP)
+allow task-profile patches only for `/blockers`. Task progress must go through
+`task_checkpoint`; completion must use `task_complete`. Domain-specific semantic
+runs retain their general patch contract. Completion additionally checks ordered
+plan coverage, nonempty evidence, reference consistency and resource fingerprints.
+
 ## Duplicate work and legitimate revalidation
 
 The runtime does not deduplicate command strings. The same test command can be

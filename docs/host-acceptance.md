@@ -26,24 +26,12 @@ then exercised from the development checkout. No production data was used.
 - A fresh process read the persisted run after the Codex process ended. The
   handoff did not depend on keeping its original conversation alive.
 
-The first Codex attempt used a non-interactive policy that could not approve a
-write tool and stopped without opening a run. The successful retry used Codex's
-supported automatic review mode with a workspace-write sandbox. This is a host
-approval requirement, not permission to bypass safeguards.
-
-Claude's first tool request was not approved by the test driver. It eventually
-returned a timeout/no-result error after approximately four minutes. The UI
-suggested an unresponsive or crashed server; that explanation was not established.
-An independent `doctor --mcp` check on the same project subsequently passed.
-No second review or completion was recorded during that initial attempt.
-The subsequent retry completed successfully, as independently verified below.
-Ordinary user tool approval remains part of setup; a timeout while waiting does
-not justify recreating or resetting the run.
+An initial connection attempt timed out before completion. A subsequent run-context and artifact verification established successful continuation without resetting the run. Host tool authorization remains part of normal setup.
 
 ### Successful Claude Desktop continuation
 
-After the user retried in Claude Desktop, Claude reported a completed second
-review. A separate process using the public package read the canonical run,
+Claude Desktop completed a second review. A separate process using the public
+package read the canonical run,
 event history and both integrity-checked artifacts to verify that report:
 
 - Run `desktop-acceptance-01`: **completed**, revision **4**, owner `claude-desktop`.

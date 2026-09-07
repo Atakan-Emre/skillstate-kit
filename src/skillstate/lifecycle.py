@@ -13,6 +13,18 @@ from .models import Skill
 PROFILE = "skillstate-task-v1"
 
 
+def guard_generic_patch(snapshot: dict, patch: list[dict]) -> None:
+    """Task progress is owned by checkpoint APIs; generic calls may manage blockers."""
+    if snapshot["state"].get("profile") != PROFILE:
+        return
+    if not isinstance(patch, list) or any(
+        not isinstance(item, dict) or item.get("path") != "/blockers" for item in patch
+    ):
+        raise ValidationError(
+            "Use task_checkpoint for task progress; generic patches may only update /blockers"
+        )
+
+
 def task_skill(goal: str, steps: list[str]) -> Skill:
     if not isinstance(goal, str) or not goal.strip() or len(goal) > 2000:
         raise ValidationError("Goal must contain 1-2000 characters")
@@ -127,7 +139,7 @@ def freshness(project: Path, state: dict) -> list[dict]:
         try:
             for artifact in m["evidence"]:
                 ArtifactStore(project).read(artifact, length=1)
-            evidence_ok = True
+            evidence_ok = bool(m["evidence"])
         except (OSError, ValueError, SkillStateError):
             evidence_ok = False
         result.append(
@@ -202,16 +214,25 @@ def validate_completion(project: Path, snapshot: dict):
     state = snapshot["state"]
     if state.get("profile") != PROFILE:
         raise ValidationError("Use the domain completion contract for this semantic run")
+    initial = snapshot["skill"]["initial_state"]
     if (
         state["remaining_steps"]
         or state["blockers"]
         or not state["milestones"]
-        or set(state["completed_steps"])
-        != set(snapshot["skill"]["initial_state"]["remaining_steps"])
+        or state["completed_steps"] != initial["remaining_steps"]
+        or state["goal"] != initial["goal"]
     ):
         raise ValidationError("Finish required steps and resolve blockers before completion")
-    if set(state["completed_steps"]) != {m["step"] for m in state["milestones"]}:
+    if state["completed_steps"] != [m["step"] for m in state["milestones"]]:
         raise ValidationError("Each completed step requires milestone evidence")
+    for milestone in state["milestones"]:
+        if not 1 <= len(milestone["evidence"]) <= 8:
+            raise ValidationError("Each milestone requires 1-8 evidence artifacts")
+        if milestone["source_fingerprint"] != digest(dumps(milestone["resources"])):
+            raise ValidationError("Milestone resource fingerprint is inconsistent")
+    expected_artifacts = list(dict.fromkeys(a for m in state["milestones"] for a in m["evidence"]))
+    if state["artifacts"] != expected_artifacts:
+        raise ValidationError("Task evidence references are inconsistent")
     if not all(item["valid"] for item in freshness(project, state)):
         raise ConflictError(
             "Milestone evidence is stale or missing; explicitly revalidate affected steps"

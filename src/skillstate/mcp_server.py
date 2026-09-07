@@ -101,8 +101,7 @@ def create_server(project: Path):
         run_id: str, owner: str, revision: int, action: dict, patch: list[dict]
     ) -> dict:
         """Persist an operation intent before the host executes its authorized tool."""
-        with service.store() as store:
-            return store.reserve(run_id, owner, revision, action, patch)
+        return service.reserve_run(run_id, owner, revision, action, patch)
 
     @server.tool()
     def run_record_result(

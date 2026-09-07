@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skillstate-kit"
-version = "0.2.0"
+version = "0.2.1"
 description = "Compile existing agent skills into portable, validated execution state."
 readme = "docs/PYPI_README.md"
 requires-python = ">=3.11"
@@ -25,7 +25,7 @@ dependencies = ["jsonschema>=4.23,<5", "PyYAML>=6.0.2,<7", "pathspec>=0.12,<1", 
 [project.optional-dependencies]
 mcp = ["mcp>=1.20,<2"]
 http = ["httpx>=0.28,<1"]
-dev = ["pytest>=8,<9", "pytest-cov>=6,<7", "hypothesis>=6.120,<7", "ruff>=0.11,<1", "build>=1.2,<2", "twine>=6,<7", "mcp>=1.20,<2", "httpx>=0.28,<1"]
+dev = ["pytest>=9.0.3,<10", "pytest-cov>=6,<7", "hypothesis>=6.120,<7", "ruff>=0.11,<1", "build>=1.2,<2", "twine>=6,<7", "mcp>=1.20,<2", "httpx>=0.28,<1"]
 
 [project.scripts]
 skillstate = "skillstate.cli:main"
@@ -41,6 +41,7 @@ packages = ["src/skillstate"]
 core-metadata-version = "2.4"
 
 [tool.hatch.build.targets.sdist]
+exclude = ["/docs/research", "/docs/architecture-audit.md"]
 core-metadata-version = "2.4"
 include = ["/src", "/tests", "/examples", "/docs", "/integrations", "/scripts", "/README.md", "/LICENSE", "/CHANGELOG.md", "/CONTRIBUTING.md", "/SECURITY.md", "/pyproject.toml", "/uv.lock", "/CITATION.cff"]
 

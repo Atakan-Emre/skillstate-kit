@@ -191,3 +191,44 @@ def test_long_run_retains_fixed_context_despite_growing_audit():
         assert result["status"] == "completed"
         assert len(storage.events("long", limit=1000)) == 202
         assert len(set(sizes)) == 1
+
+
+def test_fresh_runtime_uses_latest_observation_without_old_transcript(tmp_path):
+    from skillstate import Skill, SQLiteStore
+
+    path = tmp_path / "state.sqlite3"
+    schema = {"type": "object", "properties": {"next": {"type": "integer"}}, "required": ["next"]}
+    skill = Skill(
+        "conformance", "Process the next item using only current state.", schema, {"next": 0}
+    )
+    observed = []
+
+    def model(payload):
+        n = payload["state"]["next"]
+        assert payload["observation"] == {"current": f"observation-{n}"}
+        serialized = dumps(payload)
+        assert "history" not in payload and "events" not in payload
+        for prior in range(n):
+            assert f'"observation-{prior}"' not in serialized
+        observed.append(n)
+        return {
+            "patch": [{"op": "set", "path": "/next", "value": n + 1}],
+            "action": {"name": "advance", "arguments": {"next": n + 1}},
+            "done": False,
+        }
+
+    tool = Tool(
+        "advance",
+        "Advance current observation",
+        schema,
+        lambda args, op: ToolResult(True, {"current": f"observation-{args['next']}"}),
+    )
+    with SQLiteStore(path) as store:
+        store.create("conformance", skill, "owner", {"current": "observation-0"})
+    for _ in range(6):
+        with SQLiteStore(path) as store:
+            asyncio.run(SkillRuntime(store, model, [tool]).step("conformance", "owner"))
+    assert observed == list(range(6))
+    with SQLiteStore(path) as store:
+        assert len(store.events("conformance")) == 13
+        assert store.get("conformance")["state"] == {"next": 6}

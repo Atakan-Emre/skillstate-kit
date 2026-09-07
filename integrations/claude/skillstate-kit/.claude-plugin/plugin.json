@@ -1,6 +1,6 @@
 {
   "name": "skillstate-kit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Portable execution state, evidence-backed progress and explicit task continuation.",
   "author": {
     "name": "Atakan Emre"

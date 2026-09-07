@@ -1,5 +1,10 @@
 # Command-line guide
 
+For the built-in task profile, `run update` and `run reserve` accept patches only
+to `/blockers` (or an empty patch). Use `task checkpoint` for progress/evidence and
+`task complete` for completion. Domain-specific semantic runs retain their normal
+patch schemas. This guard is enforced from 0.2.1 onward.
+
 Commands return JSON on stdout. Runtime/domain errors return a structured object on stderr with exit code 2; filesystem/storage errors return 3. `doctor` returns 1 when checks fail. Argument parsing errors follow argparse conventions. Put `--project PATH` before the subcommand; default project is the current directory.
 
 ## Install and generate

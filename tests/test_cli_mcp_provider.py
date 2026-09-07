@@ -319,6 +319,18 @@ def test_real_mcp_task_lifecycle_uses_canonical_store(project):
             )
             assert not result.isError
             evidence = ArtifactStore(project).put("Actual protocol fixture evidence")
+            for tool_name in ("run_update", "run_reserve"):
+                args = {
+                    "run_id": "task-mcp",
+                    "owner": "codex",
+                    "revision": 0,
+                    "patch": [{"op": "set", "path": "/completed_steps", "value": ["verify"]}],
+                }
+                if tool_name == "run_reserve":
+                    args["action"] = {"name": "external", "arguments": {}}
+                rejected = await client.call_tool(tool_name, args)
+                assert rejected.isError
+            assert ProjectService(project).run_context("task-mcp")["revision"] == 0
             result = await client.call_tool(
                 "task_checkpoint",
                 {

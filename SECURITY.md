@@ -15,6 +15,14 @@ This library is not a sandbox. Python model/tool callbacks execute with the embe
 - JSON inputs are bounded. Duplicate keys, non-finite values and unsupported objects are rejected. Schema references and unrestricted regex patterns are disabled.
 - State/artifacts can contain sensitive data. Keep `.skillstate/local/` out of version control and use OS permissions and an appropriate retention policy.
 - Generated MCP configuration contains local paths; keep it local and respect host trust policies.
+- Task-profile progress is guarded at the project service/CLI/MCP boundary. General patches may update blockers; checkpoint and completion APIs own milestone progress. Direct SQLite access remains trusted local access.
+
+## Dependency checks
+
+Release CI audits the locked dependency set against published vulnerability data.
+Development and package-installation tooling are updated when advisories apply.
+A clean audit means no known findings in that dependency snapshot; it does not
+prove the absence of undisclosed defects or vulnerabilities in host applications.
 
 ## External effects
 

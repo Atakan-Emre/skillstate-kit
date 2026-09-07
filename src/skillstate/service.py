@@ -164,4 +164,12 @@ class ProjectService:
             snapshot = store.get(run_id)
             if done and snapshot["state"].get("profile") == lifecycle.PROFILE:
                 raise ValidationError("Use task_complete to validate task milestone evidence")
+            lifecycle.guard_generic_patch(snapshot, patch)
             return store.update(run_id, owner, revision, patch, observation, done=done)
+
+    def reserve_run(
+        self, run_id: str, owner: str, revision: int, action: dict, patch: list[dict]
+    ) -> dict:
+        with self.store() as store:
+            lifecycle.guard_generic_patch(store.get(run_id), patch)
+            return store.reserve(run_id, owner, revision, action, patch)

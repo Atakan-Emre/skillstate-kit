@@ -29,6 +29,7 @@ def main():
         root = Path(temporary)
         venv.EnvBuilder(with_pip=True).create(root / "env")
         python = root / "env" / ("Scripts/python.exe" if os.name == "nt" else "bin/python")
+        run([str(python), "-m", "pip", "install", "--upgrade", "pip>=26.2"], root)
         run([str(python), "-m", "pip", "install", str(wheels[0])], root)
         project = root / "project with spaces"
         project.mkdir()

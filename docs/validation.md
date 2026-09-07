@@ -31,7 +31,7 @@ five checks; the managed run resumed across a forced process exit without
 repeating completed queries. This is a separate application acceptance result,
 not an expansion of the unit-test count or a paper benchmark reproduction.
 
-See [host acceptance](host-acceptance.md) for a completed Codex-to-Claude Desktop Chat review/handoff workflow, including recovery from the initial permission/timeout interruption, and the remaining Antigravity blockers. The original configuration-only checks below are historical and do not supersede that report.
+See [host acceptance](host-acceptance.md) for a completed Codex-to-Claude Desktop Chat review/handoff workflow, including persisted recovery, with separate host coverage limitations. The original configuration-only checks below are historical and do not supersede that report.
 
 The [0.1.2 release workflow](https://github.com/Atakan-Emre/skillstate-kit/actions/runs/34088894774) passed the six OS/Python jobs, package checks and public PyPI verification. Windows/Python 3.11 passed **114 tests**, with **86.90%** coverage. Two independent Codex model sessions also generated, executed and resumed a semantic invoice skill through completion; the public 0.1.2 package independently read and verified its persisted state and artifacts.
 

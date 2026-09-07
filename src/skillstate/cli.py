@@ -271,7 +271,7 @@ def dispatch(args) -> dict | list | None:
                 decision = read(args.decision)
                 if not isinstance(decision, dict) or set(decision) != {"action", "patch"}:
                     raise ValidationError("Native decision must contain exactly action and patch")
-                return store.reserve(
+                return service.reserve_run(
                     args.run_id, args.owner, args.revision, decision["action"], decision["patch"]
                 )
             if op == "unknown":

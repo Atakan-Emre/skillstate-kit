@@ -205,3 +205,76 @@ def test_task_cli_routes_to_shared_service(project, capsys):
     assert json.loads(capsys.readouterr().out)["status"] == "completed"
     assert main(prefix + ["run", "find", "--goal", "CLI task"]) == 0
     assert json.loads(capsys.readouterr().out)[0]["id"] == "cli-task"
+
+
+@pytest.mark.parametrize("operation", ["update", "reserve"])
+@pytest.mark.parametrize(
+    "field,value",
+    [
+        ("goal", "replaced"),
+        ("completed_steps", ["inspect"]),
+        ("remaining_steps", []),
+        ("milestones", []),
+        ("artifacts", []),
+    ],
+)
+def test_native_generic_mutations_cannot_replace_task_progress(project, operation, field, value):
+    service, rid = opened(project)
+    patch = [{"op": "set", "path": "/" + field, "value": value}]
+    with pytest.raises(ValidationError, match="task_checkpoint"):
+        if operation == "update":
+            service.update_run(rid, "codex", 0, patch)
+        else:
+            service.reserve_run(rid, "codex", 0, {"name": "effect", "arguments": {}}, patch)
+    with service.store() as store:
+        assert store.get(rid)["revision"] == 0
+        assert len(store.events(rid)) == 1
+
+
+def test_completion_rejects_empty_evidence_in_a_legacy_or_tampered_record(project):
+    service, rid = opened(project, ["inspect"])
+    row = checkpoint(service, rid, "inspect")
+    milestones = row["state"]["milestones"]
+    milestones[0]["evidence"] = []
+    with service.store() as store:
+        store.update(
+            rid,
+            "codex",
+            row["revision"],
+            [{"op": "set", "path": "/milestones", "value": milestones}],
+        )
+    with pytest.raises(ValidationError, match="evidence"):
+        service.complete_task(rid, "codex", row["revision"] + 1)
+
+
+def test_task_blockers_and_operation_results_remain_supported(project):
+    service, rid = opened(project, ["inspect"])
+    row = service.update_run(
+        rid, "codex", 0, [{"op": "set", "path": "/blockers", "value": ["Awaiting input"]}]
+    )
+    op = service.reserve_run(rid, "codex", row["revision"], {"name": "check", "arguments": {}}, [])
+    with service.store() as store:
+        row = store.record_result(op["operation_id"], "codex", True, {"checked": True})
+    service.update_run(
+        rid, "codex", row["revision"], [{"op": "set", "path": "/blockers", "value": []}]
+    )
+    row = checkpoint(service, rid, "inspect")
+    assert service.complete_task(rid, "codex", row["revision"])["status"] == "completed"
+
+
+@pytest.mark.parametrize("corruption", ["duplicate_milestone", "fingerprint", "artifact_index"])
+def test_completion_rejects_inconsistent_legacy_milestone_metadata(project, corruption):
+    service, rid = opened(project, ["inspect"])
+    row = checkpoint(service, rid, "inspect")
+    milestones = row["state"]["milestones"]
+    if corruption == "duplicate_milestone":
+        milestones.append(dict(milestones[0]))
+    elif corruption == "fingerprint":
+        milestones[0]["source_fingerprint"] = "0" * 64
+    patch = [{"op": "set", "path": "/milestones", "value": milestones}]
+    if corruption == "artifact_index":
+        patch = [{"op": "set", "path": "/artifacts", "value": []}]
+    with service.store() as store:
+        store.update(rid, "codex", row["revision"], patch)
+    with pytest.raises(ValidationError):
+        service.complete_task(rid, "codex", row["revision"] + 1)
