@@ -24,6 +24,10 @@ skillstate doctor --mcp
 
 ## Otomatik üretim
 
+Claude Desktop'ın **Chat** bölümünü kullanıyorsanız ayrıca `skillstate connect claude-desktop` çalıştırıp uygulamadan tamamen çıkın ve yeniden açın. Bu bağlantı Claude Code kurulumundan ayrıdır. Araç izinlerini uygulama içinde siz verirsiniz. `skillstate disconnect claude-desktop` bağlantıyı kaldırır, görev durumunu korur. Windows Store sürümü de desteklenir; birden fazla ayar dosyası bulunursa `--config DOSYA` ile seçilir.
+
+Gerçek uygulama testlerinin sonucu [kabul raporunda](host-acceptance.md), tekrar edilebilir örnek ise [örnek projede](../examples/desktop_acceptance/README.md). Codex'in gerçek MCP devri doğrulandı; diğer uygulamalardaki eksik onay ve bağlantı adımları başarılı sayılmadı.
+
 Kurulumdan sonra agent'a “Generate skill state; bu skill'i durum yapısına dönüştür” diyebilirsiniz. Üretici kaynak envanterini hazırlayıp agent'ın önerdiği şemayı doğrular.
 
 Doğrudan `generate`, yönergeleri koruyan sınırlı bir genel ilerleme şeması oluşturur. Alana özel dönüşüm için agent destekli `--prepare`/`--proposal` akışı veya yapılandırılmış `--base-url`/`--model` kullanılır. Terminal, IDE model hesabını otomatik kullanmaz.

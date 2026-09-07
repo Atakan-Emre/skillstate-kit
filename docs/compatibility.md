@@ -7,6 +7,7 @@
 | Codex | `.agents/skills/<name>/SKILL.md` | `.codex/config.toml` | Native CLI skill + STDIO MCP |
 | Claude Code | `.claude/skills/<name>/SKILL.md` | `.mcp.json` | Native CLI skill + STDIO MCP |
 | Antigravity | `.agents/skills/<name>/SKILL.md` | `.agents/mcp_config.json` | Native CLI skill + STDIO MCP |
+| Claude Desktop Chat | MCP generation tools | App-wide `claude_desktop_config.json`, one project per entry | Explicit `connect` command; tool approvals required |
 
 The shared `.agents/skills` output is installed once for Codex/Antigravity. State is canonical in one project-local database, not copied into each host folder. These adapters target documented local discovery/configuration paths, not cloud or remote sessions.
 
@@ -21,6 +22,18 @@ Local configs contain the absolute Python executable and project path used durin
 If discovery does not refresh, reload/restart the host as its documentation requires. Respect its workspace/MCP trust policies. Use explicit skill invocation if natural language matching does not select the generator: Codex supports skill mentions; Claude Code supports `/generate-skill-state`; use the installed Antigravity skill selector/explicit invocation supported by your version.
 
 ## Verification levels
+
+### Claude Desktop Chat (0.1.2)
+
+Use `skillstate connect claude-desktop` in the target project, then fully quit/reopen Claude Desktop. The command auto-detects the standalone or Microsoft Store Windows config and the standard macOS path. Use `--config PATH` for other locations or ambiguous installs. `disconnect claude-desktop` removes only the owned, unmodified server entry; it preserves other settings and project state. `uninstall` handles project adapters separately.
+
+The connection writes an app-wide config containing an absolute interpreter and project path. A project-local receipt tracks ownership; a neighboring SQLite lock serializes this package's config writers. Atomic replacement handles individual writes; this is not a cross-file crash transaction. Keep the receipt to manage the connection. After moving a project, disconnect from the old location and reconnect from the new one. `doctor` checks the saved connection but cannot approve tools or certify host execution.
+
+Use the Chat surface. Cowork and Code in Desktop have different local tool rules; the tested build displayed a reserved-server-name warning for those surfaces. Chat still discovered the server. See [MCP SDK desktop setup](https://py.sdk.modelcontextprotocol.io/get-started/real-host/) and the [actual acceptance report](host-acceptance.md).
+
+### Antigravity product variants
+
+The workspace config path is documented for Antigravity IDE/CLI. Antigravity desktop 2.0 also has an Installed MCP Servers settings surface. In the live desktop test, the model did not receive the project MCP tools despite generated files and a populated tool cache; no state was generated. The separate IDE opened to login. Do not interpret these adapters as a passing test for every Antigravity product. [Official MCP configuration](https://antigravity.google/docs/mcp).
 
 1. **Generated:** expected files/configuration exist.
 2. **Validated:** managed content and configuration match.

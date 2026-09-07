@@ -2,7 +2,7 @@ cff-version: 1.2.0
 message: "Cite this repository and the SKILL.state paper that inspired its explicit-state execution pattern."
 title: "skillstate-kit"
 type: software
-version: 0.1.1
+version: 0.1.2
 license: MIT
 authors:
   - name: "Atakan Emre"

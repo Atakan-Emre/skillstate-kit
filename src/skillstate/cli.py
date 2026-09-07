@@ -62,6 +62,10 @@ def parser() -> argparse.ArgumentParser:
     subs.add_parser("status", help="List local runs")
     subs.add_parser("demo", help="Run the explicit offline scripted-model example")
     subs.add_parser("serve", help="Start a project-scoped STDIO MCP server")
+    for command in ("connect", "disconnect"):
+        desktop = subs.add_parser(command, help=f"{command.title()} this project to Claude Desktop")
+        desktop.add_argument("host", choices=("claude-desktop",))
+        desktop.add_argument("--config", type=Path, help="Explicit desktop config path")
     run = subs.add_parser("run", help="Operate a durable run")
     r = run.add_subparsers(dest="operation", required=True)
     open_p = r.add_parser("open")
@@ -114,6 +118,10 @@ def dispatch(args) -> dict | list | None:
 
     if args.command == "init":
         return hosts.install(project, args.host, mcp=args.mcp)
+    if args.command in ("connect", "disconnect"):
+        from .desktop import connection
+
+        return connection(project, config=args.config, remove=args.command == "disconnect")
     if args.command == "generate":
         if args.prepare:
             return compiler.prepare(project, args.source, args.name)

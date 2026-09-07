@@ -268,6 +268,8 @@ def uninstall(project: Path) -> dict:
 
 
 def doctor(project: Path) -> dict:
+    from .desktop import checks as desktop_checks
+
     project = project.resolve()
     manifest = _manifest(project)
     checks = []
@@ -306,6 +308,7 @@ def doctor(project: Path) -> dict:
                 "ok": importlib.util.find_spec("mcp") is not None,
             }
         )
+    checks.extend(desktop_checks(project))
     return {
         "ok": bool(checks) and all(check["ok"] for check in checks),
         "checks": checks,

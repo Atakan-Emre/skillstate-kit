@@ -198,6 +198,14 @@ def test_three_host_sequential_handoff_preserves_state(project):
     # This verifies our protocol, not live IDE applications.
 
 
+def test_root_skill_resource_directory_is_unambiguous(project):
+    (project / "SKILL.md").write_text("# Check\n1. Read fixtures/input.json.\n", encoding="utf-8")
+    generated = generate(project, "SKILL.md", name="root-check")
+    service = ProjectService(project)
+    opened = service.open_run(generated["name"], "codex", "root-run", {})
+    assert "relative to `.` within the project root." in opened["skill"]["instructions"]
+
+
 def test_source_drift_is_reported_and_blocks_handoff(project):
     generated = generate(project, SOURCE)
     service = ProjectService(project)

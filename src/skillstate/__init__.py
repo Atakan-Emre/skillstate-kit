@@ -15,7 +15,7 @@ from .runtime import SkillRuntime
 from .schema import apply_patch
 from .store import SQLiteStore
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = [
     "BudgetExceeded",
     "ConflictError",

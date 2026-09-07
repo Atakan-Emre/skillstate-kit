@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 — desktop connection and host acceptance
+
+- Explicit `connect claude-desktop` / `disconnect claude-desktop` commands, with Microsoft Store and standalone Windows detection, macOS defaults and explicit config paths.
+- Preserve unrelated app settings, isolate server names per project, serialize connection writes, refuse user-modified entries, and roll back configuration on receipt write failure.
+- Include desktop connections in `doctor`; retain state when disconnecting.
+- Disambiguate the source resource directory for root-level SKILL.md files.
+- Add a reproducible synthetic invoice acceptance exercise and report actual host successes and blockers separately.
+- Codex completed a real MCP review and handoff. Claude Desktop discovered the server but awaited user tool approval. Antigravity desktop reported tools unavailable; IDE login was not configured. These are not three passing end-to-end host tests.
+
 ## 0.1.1 — public distribution
 
 - Self-contained PyPI package description with installation and SDK examples.

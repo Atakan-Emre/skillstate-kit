@@ -44,6 +44,19 @@ The preparation response contains source text, its fingerprint and the proposal 
 
 You can also supply an explicitly configured endpoint with `--base-url` and `--model`. Terminal commands do not borrow your IDE's model credentials.
 
+## Claude Desktop Chat
+
+Version 0.1.2 adds an explicit local connection, separate from Claude Code:
+
+```console
+skillstate connect claude-desktop
+skillstate doctor --mcp
+```
+
+Fully quit and reopen Claude Desktop, use **Chat**, and approve the tool calls you intend to allow. The installer preserves unrelated settings and uses a separate server name per project. Windows standalone/Microsoft Store and macOS paths are supported; `--config PATH` selects a custom location. If two Windows configs exist, choose explicitly. Disconnect with `skillstate disconnect claude-desktop`; run data remains intact.
+
+Live acceptance evidence: Codex used eight real MCP calls to record a synthetic invoice review and hand it to Claude Desktop. Desktop discovered the server and requested tool permission; the second review was not completed at the time of this release. The tested Antigravity desktop session reported MCP tools unavailable, and its separate IDE required login. Generated configuration and transport tests do not establish successful execution in those hosts. No claim of universal desktop compatibility is made.
+
 ## Python integration
 
 This complete example uses a scripted model. Replace `model` and `record` with your own model and service functions:

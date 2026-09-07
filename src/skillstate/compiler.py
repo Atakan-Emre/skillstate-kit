@@ -216,7 +216,7 @@ def tracking_ir(inventory: dict, name: str | None = None, profile: str = "auto")
         )
     instructions = (
         f"Source procedure: {primary['path']}. Resolve its resource paths relative to "
-        f"{Path(primary['path']).parent.as_posix()}. Follow the user's current task and authorizations.\n\n"
+        f"`{Path(primary['path']).parent.as_posix()}` within the project root. Follow the user's current task and authorizations.\n\n"
         + body
         + "\n\nTrack active_step, completed_steps, facts, blockers and artifacts. "
         "Only mark steps complete after checking their results. Retain facts needed by later steps. "

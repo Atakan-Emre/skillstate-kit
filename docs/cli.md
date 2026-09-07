@@ -11,7 +11,24 @@ skillstate validate qa-state
 skillstate doctor --mcp
 ```
 
-Omit `--mcp` for CLI-only host usage. Omit host flags to install all three adapters. Installation is project-local; global installation and hooks are not included in 0.1.0.
+Omit `--mcp` for CLI-only host usage. Omit host flags to install all three project adapters. `init` remains project-local; no hooks are installed.
+
+### Claude Desktop Chat connection
+
+```text
+skillstate connect claude-desktop
+skillstate doctor --mcp
+skillstate disconnect claude-desktop
+```
+
+`connect` explicitly merges an app-wide MCP entry for this project. It requires
+the `mcp` extra and reports the config path and server name. Fully quit/reopen
+Claude Desktop and use Chat; allow only the tool calls you intend to authorize.
+Pass `--config PATH` when auto-detection is ambiguous or your platform uses a
+custom location. `disconnect` uses the saved receipt and retains all run data.
+It refuses to remove user-modified entries. `uninstall` does not perform this
+separate desktop disconnection. See [compatibility](compatibility.md) for the
+tested platform/surface limitations.
 
 `generate` defaults to bounded tracking state while preserving the source instructions. For a Python project, `--profile python-tests` supplies test-oriented tracking instructions. It scans AST without importing project modules. Multiple source SKILL.md files require selecting one; it does not silently combine unrelated skills.
 

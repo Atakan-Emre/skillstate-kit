@@ -9,9 +9,9 @@ Turn an existing `SKILL.md` into a state-backed skill, use it from Codex, Claude
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
-**Release status:** `0.1.1` is an initial alpha. The development repository is private; public package installation uses PyPI. Tested local adapters are not live certification of every host application.
+**Release status:** `0.1.2` is an alpha. The development repository is private; public package installation uses PyPI. See the actual [host acceptance results](docs/host-acceptance.md) before relying on a specific desktop environment.
 
-[Published package](https://pypi.org/project/skillstate-kit/0.1.1/) · [Release verification](docs/releases/0.1.1.md)
+[Published package](https://pypi.org/project/skillstate-kit/) · [Distribution verification](docs/releases/0.1.1.md)
 
 [Türkçe başlangıç](docs/README_TR.md) · [CLI](docs/cli.md) · [Architecture](docs/architecture.md) · [Compatibility](docs/compatibility.md) · [Validation](docs/validation.md)
 
@@ -22,6 +22,7 @@ Turn an existing `SKILL.md` into a state-backed skill, use it from Codex, Claude
 - **Durable state.** SQLite transactions, revision checks, ownership handoff and a persistent operation journal.
 - **Controlled execution.** Validate state and tool arguments, retain observations during retries, and stop ambiguous operations from being replayed automatically.
 - **Three host adapters.** Project-scoped skills and optional STDIO MCP configuration for Codex, Claude Code and Antigravity.
+- **Claude Desktop Chat connection.** Explicit, reversible app configuration with a separate server per project; normal tool approvals still apply.
 - **A Python SDK.** Bring your own model and tool functions. The core package requires no API key.
 
 ## Quick start
@@ -42,6 +43,8 @@ skillstate doctor --mcp
 ```
 
 After installing the package, run `init` and `generate` in your target project. `--project PATH` can also be placed **before** a subcommand. Generated MCP configurations use this machine's Python/project paths; keep them local. See [installation and compatibility](docs/compatibility.md).
+
+For Claude Desktop **Chat**, also run `skillstate connect claude-desktop`, then fully quit and reopen the app. Claude Code, Cowork and Desktop Chat have different integration surfaces. Try the [two-reviewer acceptance exercise](examples/desktop_acceptance/README.md) before using production data.
 
 After the host discovers `generate-skill-state`, ask:
 

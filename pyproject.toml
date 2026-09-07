@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "skillstate-kit"
-version = "0.1.1"
+version = "0.1.2"
 description = "Compile existing agent skills into portable, validated execution state."
 readme = "docs/PYPI_README.md"
 requires-python = ">=3.11"
