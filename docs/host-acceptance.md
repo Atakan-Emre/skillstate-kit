@@ -9,13 +9,13 @@ then exercised from the development checkout. No production data was used.
 |---|---|---|
 | Installed Codex CLI, actual model | Eight successful MCP calls; invoice total and artifact persisted; owner transferred to claude-desktop | First review and handoff passed |
 | Two additional independent Codex CLI model sessions | Source-bound semantic generation, first review/handoff, new-session second review and completion | Generation and cross-session continuation passed |
-| Claude Desktop 1.46388.4.0, Chat | Server discovered; actual model requested `run_context`; app displayed tool permission, then the call timed out without a result | Discovery passed; continuation failed in this attempt |
+| Claude Desktop 1.46388.4.0, Chat | After the initial permission/timeout interruption, resumed the existing run, saved second-review evidence and completed at revision 4; independently checked in the store | Codex-to-Claude continuation passed for this fixture |
 | Claude Desktop Cowork/Code | App displayed a reserved internal server name warning for this local entry | Not supported by this tested connection |
 | Antigravity desktop, Gemini 3.8 Flash High | Opened the project; model reported MCP tools unavailable; no skill or run was created | Requested MCP task failed |
 | Separate Antigravity IDE | Login/onboarding screen, including optional migration dialog | No model task executed |
 | Claude Code standalone | Not separately exercised | No live claim |
 
-## Independently checked Codex result
+## Independently checked Codex handoff checkpoint
 
 - Run: `desktop-acceptance-01`; revision **3**; owner `claude-desktop`.
 - Status: **ready**, no pending operation; deliberately not completed.
@@ -35,11 +35,33 @@ Claude's first tool request was not approved by the test driver. It eventually
 returned a timeout/no-result error after approximately four minutes. The UI
 suggested an unresponsive or crashed server; that explanation was not established.
 An independent `doctor --mcp` check on the same project subsequently passed.
-No second review or completion was recorded. This report does not claim a
-completed Codex-to-Claude workflow. Ordinary user tool approval remains part of
-setup. The native computer-use driver cannot grant security/privacy permissions
-on the user's behalf. Retry from the saved run after resolving host permissions;
-do not recreate or reset the run.
+No second review or completion was recorded during that initial attempt.
+The subsequent retry completed successfully, as independently verified below.
+Ordinary user tool approval remains part of setup; a timeout while waiting does
+not justify recreating or resetting the run.
+
+### Successful Claude Desktop continuation
+
+After the user retried in Claude Desktop, Claude reported a completed second
+review. A separate process using the public package read the canonical run,
+event history and both integrity-checked artifacts to verify that report:
+
+- Run `desktop-acceptance-01`: **completed**, revision **4**, owner `claude-desktop`.
+- `active_step=done`; all five steps completed; no blockers, pending operation
+  or source drift.
+- Invoice `INV-DEMO`, currency `EUR`, total `60`; second-review verdict **PASS**.
+- Second-review artifact:
+  `e72e02efac3580b5d88a60b7f7a42ec4f9d1c5f0b9e279740da9da0bcd8aeb3b`.
+- Both artifact contents agree on `10 + 20 + 30 = 60`. The second artifact cites
+  the first and identifies `claude-desktop` as reviewer.
+- The run's five events show creation by Codex, two updates, ownership handoff
+  to Claude Desktop, then completion. No reset or replacement run was recorded.
+
+This validates the representative Codex-to-Claude Desktop Chat workflow,
+including continuation after an interrupted attempt. Native facts remain
+agent-reported; the test independently verifies persistence, arithmetic and
+artifact integrity, not arbitrary external business outcomes. Antigravity and
+the other Claude surfaces retain their separate limitations below.
 
 Antigravity wrote its own final diagnostic reporting unavailable tools. Its
 local tool cache contained the 12 server schemas, but that did not prove the

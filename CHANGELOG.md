@@ -7,7 +7,7 @@
 - Include desktop connections in `doctor`; retain state when disconnecting.
 - Disambiguate the source resource directory for root-level SKILL.md files.
 - Add a reproducible synthetic invoice acceptance exercise and report actual host successes and blockers separately.
-- Codex completed a real MCP review and handoff. Claude Desktop discovered the server, displayed a tool permission request, then the call timed out without a result. Antigravity desktop reported tools unavailable; IDE login was not configured. These are not three passing end-to-end host tests.
+- Codex completed a real MCP review and handoff. Follow-up verification confirmed that Claude Desktop resumed the same run after the initial permission/timeout interruption, saved second-review evidence and completed at revision 4. Antigravity desktop reported tools unavailable; IDE login was not configured. These are not three passing end-to-end host tests.
 
 ## 0.1.1 — public distribution
 
