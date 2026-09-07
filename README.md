@@ -11,7 +11,7 @@ Turn an existing `SKILL.md` into a state-backed skill, use it from Codex, Claude
 
 **Release status:** `0.1.2` is an alpha. The development repository is private; public package installation uses PyPI. See the actual [host acceptance results](docs/host-acceptance.md) before relying on a specific desktop environment.
 
-[Published package](https://pypi.org/project/skillstate-kit/) · [Distribution verification](docs/releases/0.1.1.md)
+[Published package](https://pypi.org/project/skillstate-kit/) · [Distribution verification](docs/releases/0.1.2.md)
 
 [Türkçe başlangıç](docs/README_TR.md) · [CLI](docs/cli.md) · [Architecture](docs/architecture.md) · [Compatibility](docs/compatibility.md) · [Validation](docs/validation.md)
 

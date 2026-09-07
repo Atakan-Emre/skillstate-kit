@@ -6,6 +6,8 @@ Tests validate contracts, not an absence of all possible defects. A successful g
 
 See [host acceptance](host-acceptance.md) for a real Codex MCP review/handoff and the observed Claude Desktop/Antigravity blockers. The original configuration-only checks below are historical and do not supersede that report.
 
+The [0.1.2 release workflow](https://github.com/Atakan-Emre/skillstate-kit/actions/runs/34088894774) passed the six OS/Python jobs, package checks and public PyPI verification. Windows/Python 3.11 passed **114 tests**, with **86.90%** coverage. Two independent Codex model sessions also generated, executed and resumed a semantic invoice skill through completion; the public 0.1.2 package independently read and verified its persisted state and artifacts.
+
 ## Initial release checks (2026-09-06)
 
 - Local Windows / Python 3.12.7: **99 passed, 1 skipped**, **87.12%** combined statement/branch coverage. The skipped test requires symlink privileges. CLI Unicode output was also verified through an ASCII-only pipe.

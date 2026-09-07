@@ -8,6 +8,7 @@ then exercised from the development checkout. No production data was used.
 | Host/surface | Observation | Verdict |
 |---|---|---|
 | Installed Codex CLI, actual model | Eight successful MCP calls; invoice total and artifact persisted; owner transferred to claude-desktop | First review and handoff passed |
+| Two additional independent Codex CLI model sessions | Source-bound semantic generation, first review/handoff, new-session second review and completion | Generation and cross-session continuation passed |
 | Claude Desktop 1.46388.4.0, Chat | Server discovered; actual model requested `run_context`; app displayed tool permission, then the call timed out without a result | Discovery passed; continuation failed in this attempt |
 | Claude Desktop Cowork/Code | App displayed a reserved internal server name warning for this local entry | Not supported by this tested connection |
 | Antigravity desktop, Gemini 3.8 Flash High | Opened the project; model reported MCP tools unavailable; no skill or run was created | Requested MCP task failed |
@@ -46,6 +47,28 @@ model received callable tools. This distinction matters: generated files,
 discovery caches, actual calls and task completion are separate evidence levels.
 
 ## Fixes and reproducibility
+
+### Additional semantic generation and independent-session completion
+
+Codex subsequently used `generation_prepare` and `generation_apply` to generate
+`invoice-semantic` from the actual SKILL.md. Its schema required a fixed invoice
+ID/currency, a numeric total bounded from 0 to 60, an explicit review status and
+bounded evidence references. The source fingerprint was
+`ab8ffbe1c70011ab42a0c753449e1c68ca45cd962bc74930564e398db7d4ab40`.
+
+The first session opened `codex-semantic-01`, recorded 60 EUR and an evidence
+artifact, then transferred ownership to `codex-reviewer` at revision 2. A fresh,
+independent model session read the stored context and artifact, checked the
+arithmetic and completed the run at **revision 3**, with
+`review_status=second_review_complete`. It added a second evidence artifact.
+
+A separate verification process, using **0.1.2 installed from public PyPI**,
+asserted completed status, owner, revision, total, no pending operation, both
+artifact contents, and four persisted events. It also exercised the published
+desktop connect/doctor/disconnect commands against an isolated app config,
+confirming that unrelated preferences were preserved. This is a completed
+Codex-to-Codex continuation test; it does not change the Claude/Antigravity
+results above.
 
 The exercise exposed missing Claude Desktop setup and an ambiguous `..` in the
 root source directory instruction. Version 0.1.2 adds a reversible desktop
