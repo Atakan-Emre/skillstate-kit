@@ -30,7 +30,7 @@ skillstate doctor --mcp
 
 Claude Desktop'ın **Chat** bölümünü kullanıyorsanız ayrıca `skillstate connect claude-desktop` çalıştırıp uygulamadan tamamen çıkın ve yeniden açın. Bu bağlantı Claude Code kurulumundan ayrıdır. Araç izinlerini uygulama içinde siz verirsiniz. `skillstate disconnect claude-desktop` bağlantıyı kaldırır, görev durumunu korur. Windows Store sürümü de desteklenir; birden fazla ayar dosyası bulunursa `--config DOSYA` ile seçilir.
 
-Gerçek uygulama testlerinin sonucu [kabul raporunda](host-acceptance.md), tekrar edilebilir örnek ise [örnek projede](../examples/desktop_acceptance/README.md). Codex'te gerçek MCP üretimi ve ayrı oturumdan devam etme; ayrıca Codex → Claude Desktop Chat devri ve ikinci incelemeyle tamamlama doğrulandı. Claude Code için canlı uygulama testi yapılmadı. Antigravity masaüstü denemesinde MCP araçları kullanılamadı; bu entegrasyon başarılı sayılmıyor.
+Gerçek uygulama testlerinin sonucu [kabul raporunda](host-acceptance.md), tekrar edilebilir örnek ise [örnek projede](../examples/desktop_acceptance/README.md). Codex'te gerçek MCP üretimi ve ayrı oturumdan devam etme; ayrıca Codex → Claude Desktop Chat devri ve ikinci incelemeyle tamamlama doğrulandı. Claude Code için canlı uygulama testi yapılmadı.
 
 Kurulumdan sonra agent'a “Generate skill state; bu skill'i durum yapısına dönüştür” diyebilirsiniz. Üretici kaynak envanterini hazırlayıp agent'ın önerdiği şemayı doğrular.
 

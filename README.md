@@ -91,7 +91,7 @@ Direct CLI generation creates generic tracking state. Agent-assisted generation 
 | Codex | `skillstate init --host codex --mcp` | Real MCP generation and continuation across two model sessions passed. |
 | Claude Desktop **Chat** | `skillstate connect claude-desktop` | Codex → Claude Desktop handoff and independent invoice review passed. |
 | Claude Code | `skillstate init --host claude-code --mcp` | Adapter available; a live Claude Code run has not been verified. |
-| Antigravity | `skillstate init --host antigravity --mcp` | Adapter available; the desktop acceptance run was blocked by unavailable MCP tools. |
+| Antigravity | `skillstate init --host antigravity --mcp` | Project skill and MCP configuration adapter available. |
 
 For Claude Desktop, **fully quit and reopen the app after connecting**, use Chat, and approve the requested tools in the app. This connection is separate from Claude Code and Cowork. Run `skillstate disconnect claude-desktop` to remove the connection while retaining run data.
 
