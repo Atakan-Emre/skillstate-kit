@@ -2,6 +2,20 @@
 
 Tests validate contracts, not an absence of all possible defects. A successful generation reports structural checks; it does not invent live execution evidence.
 
+## Task integrity hardening (0.2.1)
+
+The [0.2.1 release workflow](https://github.com/Atakan-Emre/skillstate-kit/actions/runs/34120659712)
+passed **151 tests in each of six OS/Python jobs**, with **89.11–89.24%** coverage.
+Locked-dependency auditing reported no known vulnerabilities. Fresh installation,
+MCP transport, publishing and downloaded PyPI file verification passed.
+
+New regressions reject generic task progress overwrites, empty milestone evidence,
+duplicate milestones and inconsistent fingerprints/references. A fresh-runtime
+test checks that earlier observations do not enter subsequent model inputs.
+Existing Codex task records and smolagents state remained readable and valid;
+the original smolagents evidence verifier passed without new model execution.
+See [research alignment](paper-alignment.md) and [release notes](releases/0.2.1.md).
+
 ## Portable task lifecycle (0.2.0)
 
 The [0.2.0 publication workflow](https://github.com/Atakan-Emre/skillstate-kit/actions/runs/34118611608)
